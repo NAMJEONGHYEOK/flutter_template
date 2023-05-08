@@ -3,9 +3,26 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_application_template/src/providers/login_provider.dart';
 import 'package:provider/provider.dart';
 
-class Login_widget extends StatelessWidget {
+class Login_widget extends StatefulWidget {
+  @override
+  Login_widgetState createState() => Login_widgetState();
+}
+
+class Login_widgetState extends State<Login_widget> {
+  final _formKey = GlobalKey<FormState>();
+  final FocusNode _focusNodeid = FocusNode();
+  final FocusNode _focusNodepassword = FocusNode();
   final _idController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _passwordVisible = false;
+  AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
+
+  @override
+  void dispose() {
+    _focusNodeid.dispose();
+    _focusNodepassword.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +38,14 @@ class Login_widget extends StatelessWidget {
           children: <Widget>[
             // 컬럼 리스트로 각각의 위젯 출력
             _titleText(), // title 글씨
-            _buildIdInput(context), // ID 입력 위젯
-            _buildPasswordInput(context), // password 입력 위젯
-            _idCheck(), // id 저장 버튼
+            _inputform(context),
+            _findidpassword(context),
             _buildSubmitButton(context),
           ],
         ));
   }
 
-  // 타이틀 위젯
+// 타이틀 위젯
   Widget _titleText() {
     return Container(
       padding: const EdgeInsets.all(10),
@@ -49,117 +65,163 @@ class Login_widget extends StatelessWidget {
     );
   }
 
-  // id 입력위젯
-  Widget _buildIdInput(context) {
-    return Container(
-      margin: const EdgeInsets.all(6),
-      padding: const EdgeInsets.symmetric(horizontal: 9),
-      child: TextFormField(
-        keyboardType: TextInputType.text, // id text형으로 입력받기
-        autocorrect: false, //자동완성 끄기.
-        autofocus: false, // 자동 초점설정 끄기
-        controller: _idController,
-        onSaved: (value) => _idController.text = value!.trim(),
-        style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
-        decoration: InputDecoration(
-          filled: true, // 뒷 배경 색채우기
-          labelText: 'ID',
-          prefixIconConstraints:
-              const BoxConstraints(minWidth: 20, maxHeight: 20),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 15, right: 10),
-          ),
-          hintText: '아이디 입력',
-          contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(3)),
-        ),
-      ),
-    );
-  }
-
-  //password 입력위젯
-  Widget _buildPasswordInput(context) {
-    return Container(
-        margin: const EdgeInsets.all(6),
-        padding: const EdgeInsets.symmetric(horizontal: 9),
-        child: TextFormField(
-          autocorrect: false,
-          autofocus: false,
-          controller: _passwordController,
-          onSaved: (value) => _passwordController.text = value!.trim(),
-          keyboardType: TextInputType.text,
-          style: const TextStyle(fontSize: 15),
-          decoration: InputDecoration(
-            filled: true, // 뒷 배경 색채우기
-            labelText: 'PASSWORD',
-            prefixIconConstraints:
-                const BoxConstraints(minWidth: 20, maxHeight: 20),
-            prefixIcon: Padding(
-              padding: const EdgeInsets.only(left: 15, right: 10),
+  Widget _inputform(BuildContext context) {
+    return Form(
+        key: _formKey,
+        autovalidateMode: _autovalidateMode,
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(6),
+              padding: const EdgeInsets.symmetric(horizontal: 9),
+              child: TextFormField(
+                focusNode: _focusNodeid,
+                validator: (id) {
+                  if (id!.isEmpty) {
+                    return "id 입력해 주세요.";
+                  }
+                  return null;
+                },
+                keyboardType: TextInputType.text, // id text형으로 입력받기
+                autocorrect: false, //자동완성 끄기.
+                autofocus: false, // 자동 초점설정 끄기
+                controller: _idController,
+                onSaved: (value) => _idController.text = value!.trim(),
+                style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
+                decoration: InputDecoration(
+                  filled: true, // 뒷 배경 색채우기
+                  labelText: 'ID',
+                  prefixIconConstraints:
+                      const BoxConstraints(minWidth: 20, maxHeight: 20),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 10),
+                  ),
+                  hintText: '아이디 입력',
+                  contentPadding:
+                      const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3)),
+                ),
+              ),
             ),
-            hintText: '비밀번호 입력',
-            contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(3)),
-          ),
-          obscureText: true, // 비밀번호 안보이게 처리.
+            Container(
+                margin: const EdgeInsets.all(6),
+                padding: const EdgeInsets.symmetric(horizontal: 9),
+                child: Consumer<AuthProvider>(
+                  builder: (context, isObscure, child) {
+                    return TextFormField(
+                      validator: (password) {
+                        if (password!.isEmpty) {
+                          return "password를 입력해 주세요.";
+                        }
+                        return null;
+                      },
+                      focusNode: _focusNodepassword,
+                      autocorrect: false,
+                      autofocus: false,
+                      controller: _passwordController,
+                      onSaved: (value) =>
+                          _passwordController.text = value!.trim(),
+                      keyboardType: TextInputType.text,
+                      style: const TextStyle(fontSize: 15),
+                      decoration: InputDecoration(
+                        errorStyle: TextStyle(fontSize: 12, color: Colors.red),
+                        filled: true, // 뒷 배경 색채우기
+                        labelText: 'PASSWORD',
+                        prefixIconConstraints:
+                            const BoxConstraints(minWidth: 20, maxHeight: 20),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 15, right: 10),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: _passwordVisible
+                              ? Icon(Icons.visibility)
+                              : Icon(Icons.visibility_off),
+                          color: Colors.grey,
+                          onPressed: () {
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
+                          },
+                        ),
+                        hintText: '비밀번호 입력',
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(3)),
+                      ),
+                      obscureText: !_passwordVisible, // 비밀번호 안보이게 처리.
+                    );
+                  },
+                ))
+          ],
         ));
   }
 
-  //아이디 저장 상태 유무 버튼
+//아이디 저장 상태 유무 버튼
   Widget _idCheck() {
-    return Container(
-      margin: const EdgeInsets.only(left: 15),
-      height: 50,
-      width: double.infinity,
-      child: Row(
-        children: <Widget>[
-          Container(
-            child: const Text(
-              "자동 로그인",
-              style: TextStyle(
-                fontWeight: FontWeight.w200,
-                fontSize: 15,
-              ),
-            ),
+    return Row(
+      children: <Widget>[
+        const Text(
+          "자동 로그인",
+          style: TextStyle(
+            fontWeight: FontWeight.w200,
+            fontSize: 15,
           ),
-          Consumer<AuthProvider>(
-            // consumer 이용해서 context를 통해서 value 변수로 값을 주고 받는다.
-            builder: (context, value, child) => Switch(
-                // 변수 value, 적용범위 child
-                onChanged: (bool avalue) {
-                  value.autologin(autovalue: avalue);
+        ),
+        Consumer<AuthProvider>(
+          // consumer 이용해서 context를 통해서 value 변수로 값을 주고 받는다.
+          builder: (context, value, child) => Switch(
+              // 변수 value, 적용범위 child
+              onChanged: (bool avalue) {
+                value.autologin(autovalue: avalue);
 
-                  // provider에 정의된 토글 함수에 변수 isNoti를 대입
-                },
-                value: value.isAutoLogin),
-          )
+                // provider에 정의된 토글 함수에 변수 isNoti를 대입
+              },
+              value: value.isAutoLogin),
+        ),
+      ],
+    );
+  }
+
+// id password 찾기 위젯
+  Widget _findidpassword(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 15, right: 15),
+      height: 50,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          _idCheck(),
+          TextButton(onPressed: () {}, child: Text("id/password 찾기"))
         ],
       ),
     );
   }
 
-  //로그인 버튼 위젯
+//로그인 버튼 위젯
   Widget _buildSubmitButton(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
+        padding: const EdgeInsets.only(left: 15, right: 15, top: 5),
         width: double.infinity,
         height: 60,
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
-            onPressed: () async {
+            onPressed: () {
+              _formKey.currentState!.validate();
+              _formKey.currentState!.save();
               //id가 비었을경우
               if (_idController.text.isEmpty) {
-                _showDialog(
-                  context,
-                  'ID를 입력해 주세요',
-                );
+                _focusNodeid.requestFocus();
               }
               //password가 비었을 경우
               else if (_passwordController.text.isEmpty) {
-                _showDialog(
-                  context,
-                  'PASSWORD를 입력해 주세요',
-                );
+                _focusNodepassword.requestFocus();
+              } else if (!_formKey.currentState!.validate()) {
+                // 유효성에서 걸릴경우 state변경 후 메세지 출력
+                setState(() {
+                  _autovalidateMode = AutovalidateMode.always;
+                });
               }
               //입력칸이 전부 입려된 경우. 로그인 함수로 일치, 불일치 실행.
               else {
@@ -202,29 +264,30 @@ class Login_widget extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             )));
   }
-}
 
 // 팝업창 함수.
-void _showDialog(context, String contents) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        title: new Text("다시 입력해주세요."),
-        content: SingleChildScrollView(child: new Text('$contents')),
-        actions: <Widget>[
-          Container(
-            child: TextButton(
-              child: const Text("Close"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+  void _showDialog(context, String contents) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+          title: new Text("다시 입력해주세요."),
+          content: SingleChildScrollView(child: new Text('$contents')),
+          actions: <Widget>[
+            Container(
+              child: TextButton(
+                child: const Text("Close"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
-          ),
-        ],
-      );
-    },
-  );
+          ],
+        );
+      },
+    );
+  }
 }

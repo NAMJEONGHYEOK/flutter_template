@@ -10,7 +10,7 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoggedIn => _isLoggedIn;
 
   void autologin({bool autovalue = true}) {
-    this._isAutoLogin = autovalue;
+    _isAutoLogin = autovalue;
     notifyListeners();
   }
 
