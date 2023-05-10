@@ -45,4 +45,3 @@ app.*.map.json
 
 # config
 /lib/src/utils/config.dart
-../express_server/config.js
