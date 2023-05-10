@@ -19,7 +19,7 @@ class Login extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Login_widget(),
+      body: LoginWidget(),
     );
   }
 }

@@ -7,7 +7,7 @@ class Home extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false, // 키보드 화면 밀림방지
       appBar: AppBar(),
-      body: const Home_widget(),
+      body: const HomeWidget(),
     );
   }
 }

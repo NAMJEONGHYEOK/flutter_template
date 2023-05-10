@@ -3,12 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_application_template/src/providers/login_provider.dart';
 import 'package:provider/provider.dart';
 
-class Login_widget extends StatefulWidget {
+class LoginWidget extends StatefulWidget {
   @override
-  Login_widgetState createState() => Login_widgetState();
+  LoginWidgetState createState() => LoginWidgetState();
 }
 
-class Login_widgetState extends State<Login_widget> {
+class LoginWidgetState extends State<LoginWidget> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _focusNodeid = FocusNode();
   final FocusNode _focusNodepassword = FocusNode();
@@ -41,6 +41,7 @@ class Login_widgetState extends State<Login_widget> {
             _inputform(context),
             _findidpassword(context),
             _buildSubmitButton(context),
+            _signupline(),
           ],
         ));
   }
@@ -78,7 +79,7 @@ class Login_widgetState extends State<Login_widget> {
                 focusNode: _focusNodeid,
                 validator: (id) {
                   if (id!.isEmpty) {
-                    return "id 입력해 주세요.";
+                    return "id를 입력해 주세요.";
                   }
                   return null;
                 },
@@ -193,7 +194,10 @@ class Login_widgetState extends State<Login_widget> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           _idCheck(),
-          TextButton(onPressed: () {}, child: Text("id/password 찾기"))
+          TextButton(
+              onPressed: () {},
+              child:
+                  Text("Id/Password 찾기", style: TextStyle(color: Colors.grey)))
         ],
       ),
     );
@@ -263,6 +267,28 @@ class Login_widgetState extends State<Login_widget> {
               "Login",
               style: TextStyle(fontSize: 16),
             )));
+  }
+
+  Widget _signupline() {
+    return Padding(
+      padding: EdgeInsets.only(top: 60),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "아직 회원이 아니신가요?",
+            style: TextStyle(color: Colors.grey),
+          ),
+          TextButton(
+              onPressed: () {},
+              child: const Text(
+                "회원가입",
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+              ))
+        ],
+      ),
+    );
   }
 
 // 팝업창 함수.
