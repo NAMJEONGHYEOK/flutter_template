@@ -1,11 +1,16 @@
-const express = require("express");
-const app = express()
-const port = 5000;
+const express = require('express');
+const bodyParser = require('body-parser');
+const config = require('./config'); // config.js 파일 불러오기
 
-app.listen(port,()=> {
-    console.log("서버가 실행되었습니다.");
-})
+const app = express();
+const port = config.server.port; // 포트 설정
 
-app.get("/",(request,response) => {
-    response.send("성공");
-})
+app.use(bodyParser.json());
+
+// 라우팅 설정
+app.use('/', require('./routes'));
+
+// 서버 실행
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
