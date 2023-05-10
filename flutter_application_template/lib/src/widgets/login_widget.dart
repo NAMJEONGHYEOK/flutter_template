@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_application_template/src/providers/login_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -229,7 +230,22 @@ class LoginWidgetState extends State<LoginWidget> {
               }
               //입력칸이 전부 입려된 경우. 로그인 함수로 일치, 불일치 실행.
               else {
-                Navigator.pushNamed(context, 'home');
+                if (context
+                        .read<AuthProvider>()
+                        .login(_idController.text, _passwordController.text) !=
+                    null) {
+                  print(context.read<AuthProvider>().accessToken);
+                }
+//               // ##
+//               final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+// // Access Token 저장
+// authProvider.accessToken = 'your_access_token_here';
+
+// // Access Token 삭제
+// authProvider.deleteAccessToken();
+
+                // Navigator.pushNamed(context, 'home');
 
                 // if (!await context
                 //     .read<AuthProvider>()
