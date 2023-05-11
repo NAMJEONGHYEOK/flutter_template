@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application_template/src/providers/login_provider.dart';
+import 'package:flutter_application_template/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class LoginWidget extends StatefulWidget {
@@ -176,8 +176,7 @@ class LoginWidgetState extends State<LoginWidget> {
           builder: (context, value, child) => Switch(
               // 변수 value, 적용범위 child
               onChanged: (bool avalue) {
-                value.autologin(autovalue: avalue);
-
+                value.autologin(avalue);
                 // provider에 정의된 토글 함수에 변수 isNoti를 대입
               },
               value: value.isAutoLogin),
@@ -212,7 +211,7 @@ class LoginWidgetState extends State<LoginWidget> {
         height: 60,
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
-            onPressed: () {
+            onPressed: () async {
               _formKey.currentState!.validate();
               _formKey.currentState!.save();
               //id가 비었을경우
@@ -230,11 +229,12 @@ class LoginWidgetState extends State<LoginWidget> {
               }
               //입력칸이 전부 입려된 경우. 로그인 함수로 일치, 불일치 실행.
               else {
-                if (context
-                        .read<AuthProvider>()
-                        .login(_idController.text, _passwordController.text) !=
-                    null) {
-                  print(context.read<AuthProvider>().accessToken);
+                if (await context
+                    .read<AuthProvider>()
+                    .login(_idController.text, _passwordController.text)) {
+                  Navigator.pushNamed(context, 'home');
+                } else {
+                  _showDialog(context, "로그인 실패");
                 }
 //               // ##
 //               final authProvider = Provider.of<AuthProvider>(context, listen: false);

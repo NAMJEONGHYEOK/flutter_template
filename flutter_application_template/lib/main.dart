@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_template/src/providers/login_provider.dart';
+import 'package:flutter_application_template/src/providers/auth_provider.dart';
 import 'package:flutter_application_template/src/routes/routes.dart';
 import 'package:flutter_application_template/src/screens/login.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: MyTheme.theme,
-      initialRoute: 'login',
+      initialRoute: 'splash',
       onGenerateRoute: Routers.generateRoute,
     );
   }

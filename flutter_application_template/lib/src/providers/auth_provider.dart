@@ -11,21 +11,26 @@ class AuthProvider extends ChangeNotifier {
   final _storage = const FlutterSecureStorage();
   final bool _isLoggedIn = false; // _추가하여 외부접근 방지.
   bool _isAutoLogin = false;
-  late String? _accessToken;
+  String? _accessToken = null;
+
   // late User _currentUser;
 
   bool get isAutoLogin => _isAutoLogin;
   bool get isLoggedIn => _isLoggedIn;
+  String? get accessToken => _accessToken;
 
   final AuthRepository _authRepository = AuthRepository();
 
-  void autologin({bool autovalue = true}) {
+  void autologin(bool autovalue) async {
     _isAutoLogin = autovalue;
+    await _storage.write(
+        key: 'isAutoLogin', value: "${_isAutoLogin}"); // int or string 만 저장가능
+    print(autovalue);
     notifyListeners();
   }
 
   // access 토큰 getter,setter 저장
-  Future<String?> get accessToken async {
+  Future<String?> getaccessToken() async {
     if (_accessToken != null) {
       return _accessToken;
     }
@@ -39,49 +44,66 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // refresh 토큰 getter 저장.
+  // refresh 토큰 getter ,setter.
   Future<String?> getRefreshToken() async {
-    String? refreshToken = await _storage.read(key: 'refreshToken');
+    String? refreshToken = await _storage.read(key: 'refresh_token');
     if (refreshToken != null && refreshToken.isNotEmpty) {
       return refreshToken;
     }
     return null;
   }
 
-  // provider - login
-  Future<http.Response> login(String id, String password) async {
-    final response = await _authRepository.login(id, password);
-    if (response.statusCode == 200) {
-      final String? rawCookie = response.headers['set-cookie'];
-      if (rawCookie != null) {
-        // 추출한 쿠키 중에서 refreshToken 값을 찾아냅니다.
-        final List<String> cookies = rawCookie.split(';');
-        for (String cookie in cookies) {
-          if (cookie.startsWith('refreshToken=')) {
-            final String refreshToken =
-                cookie.substring('refreshToken='.length);
-            // 추출한 refreshToken 값을 안전하게 저장합니다.
-            await _storage.write(key: 'refresh_token', value: refreshToken);
-            break;
-          }
-        }
-      }
-      final Map<String, dynamic> data = json.decode(response.body);
-      _setAccessToken(data['access_token']); // accessToken 저장.
-
-      notifyListeners();
-    }
-    return response;
+  Future<void> _setRefreshToken(String? token) async {
+    await _storage.write(key: 'refresh_token', value: token);
   }
 
-  Future<http.Response> logout(String token) async {
+  // provider - login
+  Future<bool> login(String id, String password) async {
+    final response = await _authRepository.login(id, password);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      _setAccessToken(data['accessToken']); // accessToken 저장.
+      _setRefreshToken(data['refreshToken']); // refreshToken 저장.
+      // print(getaccessToken());
+      // print(getRefreshToken());
+
+      notifyListeners();
+      return true;
+    }
+    // else if (response.statusCode ==)
+    return false;
+  }
+
+  // provider - token _login
+  Future<bool> tokenLogin() async {
+    await Future.delayed(Duration(seconds: 2)); // 2초 딜레이
+    if (await _storage.read(key: 'isAutoLogin') != "false") {
+      // "true" 일 경우에만  토큰 로그인 시도.
+      String? access_token = await getaccessToken();
+      String? refresh_token = await getRefreshToken();
+      final response =
+          await _authRepository.token_login(access_token, refresh_token);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        _setAccessToken(data['accessToken']); // accessToken 저장.
+        _setRefreshToken(data['refreshToken']); // refreshToken 저장.
+        notifyListeners();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> logout(String token) async {
     final response = await _authRepository.logout(token);
     if (response.statusCode == 204) {
       _accessToken = null;
       await _storage.delete(key: 'access_token');
+      await _storage.delete(key: 'refresh_token');
       notifyListeners();
+      return true;
     }
-    return response;
+    return false;
   }
 
   void Listener() {

@@ -1,13 +1,21 @@
 const express = require('express');
 const mariadb = require('mariadb');
-const moment = require('moment-timezone');
-const jwt = require('jsonwebtoken');
+const jwtutil = require('./jwtutil');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser'); // body-parser 모듈 불러오기
 const cors = require('cors');
 const config = require ('./config');
 
+
+
+
+// JWT Secret Key 설정
+const accessTokenSecret = config.accessTokenSecret;
+const refreshTokenSecret = config.refreshTokenSecret;
 const app = express();
+
+
+
 app.use(cookieParser());
 app.use(cors());
 // const whitelist = ['http://localhost:3000/', 'http://localhost:3000/login','http://localhost:3000/#','http://localhost:3000/#/',];
@@ -33,38 +41,78 @@ const pool = mariadb.createPool({
   connectionLimit: 10,
 });
 
-// JWT Secret Key 설정
-const accessTokenSecret = config.accessTokenSecret;
-const refreshTokenSecret = config.refreshTokenSecret;
+//토큰 검증 미들웨어
+const authMiddleware = async (req, res,conn) => {
+ 
+  const accessToken = req.body['access_token']
+  const refreshToken = req.body['refresh_token']
+  if (!accessToken) {
+    return res.status(401).send('go login');
+  }
+  try {
+    // Access Token 검증 
+    await jwtutil.authenticateToken(accessToken)
+    .then(decoded => {
+      req.user = decoded;
+  
 
+      return res.status(200).send({accessToken,refreshToken}) //  access 정상인경우 200, 토큰 전송
+    })
+    .catch(async err => {
+      if (err.name === 'TokenExpiredError')  {
+        // Access Token 만료 시, Refresh Token 검증 수행
+        try {
+          const decoded = await jwtutil.verifyRefreshToken(refreshToken);
+          req.user = { id: decoded.id };
+          // access 토큰만 만료, refresh 는 남았을 경우 둘다 재발급 필요
+          return await jwtutil.generateTokenAndSave(req,res,conn,req.user)
+          
+        } catch (err) {
+          //refresh 토큰 만료시 로그인 해야함
+          if (err.name === 'TokenExpiredError') {
+            
+           return res.status(401).send('token 유효기간 만료')
+          } else {
+            console.error(err);
+          }
+        }
+      } else {
+        console.log(err);
+        return res.status(401).send('Unauthorized Access3');
+      }
+    });
+    
 
-// Access Token 발급 함수
-function generateAccessToken(user) {
-  return jwt.sign(user, accessTokenSecret, { expiresIn: '1h' });
-}
-
-// Refresh Token 발급 함수
-function generateRefreshToken(user) {
-  return jwt.sign(user, refreshTokenSecret, {expiresIn: '36h'});
-}
-
-// Access Token 검증 미들웨어
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (token == null) {
-    return res.sendStatus(401);
+  } catch (err) {
+    console.error(err);
+   
   }
 
-  jwt.verify(token, accessTokenSecret, (err, user) => {
-    if (err) {
-      return res.sendStatus(403);
-    }
-    req.user = user;
-    next();
-  });
-}
+};
+
+
+// app.use(authMiddleware);
+
+
+// 토큰 로그인 라우터
+app.post('/token_login' ,async (req, res) => {
+  const { access_token, refresh_token } = req.body;
+
+  // MariaDB에서 유저 정보 조회
+  let conn;
+  conn = await pool.getConnection();
+
+  try {
+
+      authMiddleware(req,res,conn);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  } finally {
+    if (conn) conn.release();
+  }
+});
 
 // 로그인 라우터
 app.post('/login', async (req, res) => {
@@ -83,28 +131,8 @@ app.post('/login', async (req, res) => {
       return res.status(400).send('Invalid ID or password');
     }
     const user = result[0];
-
-    // 비밀번호 검증 해쉬값은 나중에 작업...
-
-    // const isPasswordMatch = await bcrypt.compare(password, user.password);
-    // if (!isPasswordMatch) {
-    //   return res.status(400).send('Invalid ID or password');
-    // }
-
-    // Access Token, Refresh Token 생성
-      // refresh토큰 유효시간 지정
-      const formattedExpiresAt = moment().tz('Asia/Seoul').add(10, 'minutes').format('YYYY-MM-DD HH:mm:ss');
-
-    const accessToken = generateAccessToken({ id: user.id });
-    const refreshToken = generateRefreshToken({ id: user.id });
-
-    // Refresh Token 저장 (MariaDB)
-    await conn.query(`INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ('${user.id}', '${refreshToken}', '${formattedExpiresAt}')`);
-    // Access Token을 Response Header에 저장
-    res.header('Access-Control-Allow-Origin', '*');
-    res.set('Authorization', `Bearer ${accessToken}`);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-    res.send({ accessToken });
+    await jwtutil.generateTokenAndSave(req,res,conn,user);
+  
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
@@ -115,13 +143,15 @@ app.post('/login', async (req, res) => {
 
 // 로그아웃 라우터
 app.delete('/logout', async (req, res) => {
-  const refreshToken = req.body.token;
-
+  const refreshToken = req.body;
   // Refresh Token 삭제 (MariaDB)
+  console.log(refreshToken);
+  console.log(refreshToken.token);
+  
   let conn;
   try {
     conn = await pool.getConnection();
-    await conn.query(`DELETE FROM RefreshToken WHERE token = '${refreshToken}'`);
+    await conn.query(`DELETE FROM refresh_tokens WHERE token = '${refreshToken}'`);
     res.sendStatus(204);
   } catch (err) {
     console.error(err);
