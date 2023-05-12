@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_template/src/screens/change_password.dart';
+import 'package:flutter_application_template/src/screens/find_id_result.dart';
+import 'package:flutter_application_template/src/screens/find_user.dart';
+import 'package:flutter_application_template/src/screens/signup.dart';
 import 'package:flutter_application_template/src/screens/splash.dart';
 import 'package:flutter_application_template/src/screens/login.dart';
 import 'package:flutter_application_template/src/screens/home.dart';
@@ -8,11 +12,18 @@ class Routers {
     switch (settings.name) {
       case 'splash':
         return MaterialPageRoute(builder: (_) => Splash());
-
       case 'login':
         return MaterialPageRoute(builder: (_) => Login());
       case 'home':
         return MaterialPageRoute(builder: (_) => Home());
+      case 'signup':
+        return MaterialPageRoute(builder: (_) => SignUp());
+      case 'finduser':
+        return MaterialPageRoute(builder: (_) => FindUser());
+      case 'findidresult':
+        return MaterialPageRoute(builder: (_) => FindIdResult());
+      case 'changepassword':
+        return MaterialPageRoute(builder: (_) => ChangePassword());
 
       default:
         return MaterialPageRoute(builder: (_) {

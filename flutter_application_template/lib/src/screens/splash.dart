@@ -21,12 +21,12 @@ class Splash extends StatelessWidget {
           );
         } else if (snapshot.data == true) {
           // 로그인 상태이면 홈 화면으로 이동
-          WidgetsBinding.instance?.addPostFrameCallback((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.pushNamed(context, 'home');
           });
         } else {
           // 로그인 상태가 아니면 로그인 화면으로 이동
-          WidgetsBinding.instance?.addPostFrameCallback((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.pushNamed(context, 'login');
           });
         }

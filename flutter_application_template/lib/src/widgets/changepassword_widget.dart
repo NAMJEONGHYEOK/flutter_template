@@ -1,13 +1,17 @@
 //StatefulWidget 으로 작성
-
 import 'package:flutter/material.dart';
 
-class SignUpWidget extends StatefulWidget {
+class ChangePasswordWidget extends StatefulWidget {
   @override
-  SignUpWidgetState createState() => SignUpWidgetState();
+  ChangePasswordWidgetState createState() => ChangePasswordWidgetState();
 }
 
-class SignUpWidgetState extends State<SignUpWidget> {
+class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

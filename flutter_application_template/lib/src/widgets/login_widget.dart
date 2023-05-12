@@ -92,6 +92,7 @@ class LoginWidgetState extends State<LoginWidget> {
                 style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
                 decoration: InputDecoration(
                   filled: true, // 뒷 배경 색채우기
+                  fillColor: Colors.white,
                   labelText: 'ID',
                   prefixIconConstraints:
                       const BoxConstraints(minWidth: 20, maxHeight: 20),
@@ -110,6 +111,7 @@ class LoginWidgetState extends State<LoginWidget> {
                 margin: const EdgeInsets.all(6),
                 padding: const EdgeInsets.symmetric(horizontal: 9),
                 child: Consumer<AuthProvider>(
+                  // 아이콘 때문에 상태 생산/소비 동시 사용 - consumer
                   builder: (context, isObscure, child) {
                     return TextFormField(
                       validator: (password) {
@@ -129,6 +131,7 @@ class LoginWidgetState extends State<LoginWidget> {
                       decoration: InputDecoration(
                         errorStyle: TextStyle(fontSize: 12, color: Colors.red),
                         filled: true, // 뒷 배경 색채우기
+                        fillColor: Colors.white,
                         labelText: 'PASSWORD',
                         prefixIconConstraints:
                             const BoxConstraints(minWidth: 20, maxHeight: 20),
@@ -195,7 +198,9 @@ class LoginWidgetState extends State<LoginWidget> {
         children: <Widget>[
           _idCheck(),
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, 'finduser');
+              },
               child:
                   Text("Id/Password 찾기", style: TextStyle(color: Colors.grey)))
         ],
@@ -296,7 +301,9 @@ class LoginWidgetState extends State<LoginWidget> {
             style: TextStyle(color: Colors.grey),
           ),
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, 'signup');
+              },
               child: const Text(
                 "회원가입",
                 style:

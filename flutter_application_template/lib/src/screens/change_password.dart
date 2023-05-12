@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_template/src/widgets/finduser_widget.dart';
+import 'package:flutter_application_template/src/widgets/changepassword_widget.dart';
 
-class FindUser extends StatelessWidget {
+class ChangePassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -10,7 +10,7 @@ class FindUser extends StatelessWidget {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: const Text(
-          "아이디 찾기",
+          "비밀번호 변경",
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 20,
@@ -19,7 +19,7 @@ class FindUser extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: FindUserWidget(),
+      body: ChangePasswordWidget(),
     );
   }
 }
