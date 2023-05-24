@@ -1,19 +1,10 @@
-//StatelessWidget 으로 작성
+// 로그인 페이지 이동 버튼
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_template/src/widgets/gologinbutton_widget.dart';
 
-class FindIdResultWidget extends StatelessWidget {
-  @override
+class GoLoginButton extends StatelessWidget {
+  // 로그인 페이지 이동 버튼
   Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-      children: [_changepassoword(context), GoLoginButton()],
-    ));
-  }
-
-  // 비밀번호 변경하러가는 버튼
-  Widget _changepassoword(BuildContext context) {
     return Container(
         padding: const EdgeInsets.only(left: 15, right: 15),
         margin: EdgeInsets.only(top: 30),
@@ -22,7 +13,7 @@ class FindIdResultWidget extends StatelessWidget {
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
             onPressed: () {
-              Navigator.pushNamed(context, 'changepassword');
+              Navigator.pushNamed(context, 'login');
             },
             style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -44,7 +35,7 @@ class FindIdResultWidget extends StatelessWidget {
               ),
             ),
             child: const Text(
-              "비밀번호 변경",
+              "로그인",
               style: TextStyle(fontSize: 16),
             )));
   }

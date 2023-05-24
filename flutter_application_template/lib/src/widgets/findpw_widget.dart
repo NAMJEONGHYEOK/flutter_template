@@ -1,59 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_template/src/screens/find_id_result.dart';
 
-class FindUserWidget extends StatefulWidget {
+class FindPwWidget extends StatefulWidget {
   @override
-  FindUserWidgetState createState() => FindUserWidgetState();
+  FindPwWidgetState createState() => FindPwWidgetState();
 }
 
-class FindUserWidgetState extends State<FindUserWidget>
-    with TickerProviderStateMixin {
-  // state 선언
-  final _eformKey = GlobalKey<FormState>();
+class FindPwWidgetState extends State<FindPwWidget> {
   final _pformKey = GlobalKey<FormState>();
   final FocusNode _focusNodename = FocusNode();
   final FocusNode _focusNodeemail = FocusNode();
   final FocusNode _focusNodephone = FocusNode();
   final _nameController = TextEditingController();
-  final _pnameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  // 화면 전환 에니메이션
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
-  late TabController _tabController;
-  int _tabbarIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(
-      length: 2,
-      vsync: this, //vsync에 this 형태로 전달해야 애니메이션이 정상 처리됨
-    );
-
-    // TabController의 인덱스 변경 이벤트를 감지하는 리스너 등록
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        _nameController.clear();
-        _emailController.clear();
-        _phoneController.clear();
-        _pnameController.clear();
-        _tabbarIndex = _tabController.index;
-        setState(() {
-          _autovalidateMode = AutovalidateMode.disabled;
-        });
-      }
-    });
-  }
 
   @override
   void dispose() {
+    _autovalidateMode = AutovalidateMode.disabled;
     _focusNodename.dispose();
     _focusNodeemail.dispose();
     _focusNodephone.dispose();
-    _tabController.dispose();
-    _pnameController.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -62,61 +30,17 @@ class FindUserWidgetState extends State<FindUserWidget>
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 2,
-        child: Column(
-          children: [
-            TabBar(
-              tabs: const [
-                Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Text(
-                    "이메일 인증",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Text(
-                    "휴대폰 인증",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                )
-              ],
-              controller: _tabController,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-            ),
-            Expanded(
-                child: TabBarView(
-              controller: _tabController,
-              children: [_tabPagefirst(context), _tabPagesecond(context)],
-            ))
-          ],
-        ));
-  }
-
-  // 첫번째 탭 페이지
-  Widget _tabPagefirst(BuildContext context) {
     return Container(
-      child: Column(children: [
-        _topLineText(context),
-        _inputform_email(context),
-        _findpassoword(context),
-        _buildSubmitButton(context)
-      ]),
-    );
-  }
-
-  // 탭 두번째 페이지
-  Widget _tabPagesecond(BuildContext context) {
-    return Container(
-      child: Column(children: [
-        _topLineText(context),
-        _inputform_phone(context),
-        _findpassoword(context),
-        _buildSubmitButton(context)
-      ]),
+      padding: const EdgeInsets.all(15.0), // 컨테이너 페딩추가.
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          _topLineText(context),
+          _inputformpassword(context),
+          _changepassoword(context),
+          _loginpage(context)
+        ],
+      ),
     );
   }
 
@@ -126,7 +50,7 @@ class FindUserWidgetState extends State<FindUserWidget>
       margin: EdgeInsets.only(top: 50, bottom: 50),
       width: 400,
       child: const Text(
-        "회원가입 시 등록한 정보로 인증을 통해 아이디를 찾거나 패스워드를 변경할 수 있습니다.",
+        "새 비밀번호를 등록해주세요.",
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
         textAlign: TextAlign.center,
       ),
@@ -134,9 +58,9 @@ class FindUserWidgetState extends State<FindUserWidget>
   }
 
   // textformfield - onChange에서 error 확인 후 setState 로 vaildator에 전달하면 실시간 유효성 검사가능
-  Widget _inputform_email(BuildContext context) {
+  Widget _inputformpassword(BuildContext context) {
     return Form(
-        key: _eformKey,
+        key: _pformKey,
         autovalidateMode: _autovalidateMode,
         child: Column(children: [
           Container(
@@ -213,50 +137,6 @@ class FindUserWidgetState extends State<FindUserWidget>
                       borderRadius: BorderRadius.circular(3)),
                 ),
               )),
-        ]));
-  }
-
-  Widget _inputform_phone(BuildContext context) {
-    return Form(
-        key: _pformKey,
-        autovalidateMode: _autovalidateMode,
-        child: Column(children: [
-          Container(
-            margin: const EdgeInsets.all(6),
-            padding: const EdgeInsets.symmetric(horizontal: 9),
-            child: TextFormField(
-              focusNode: _focusNodename,
-              validator: (name) {
-                if (name!.isEmpty) {
-                  return "이름을 입력해 주세요.";
-                } else if (!RegExp(r'^[ㄱ-ㅎ|가-힣|a-z|A-Z|\s]+$').hasMatch(name)) {
-                  return '한글 또는 영어만 입력 가능합니다';
-                }
-                return null;
-              },
-              keyboardType: TextInputType.text, // id text형으로 입력받기
-              autocorrect: false, //자동완성 끄기.
-              autofocus: true, // 자동 초점설정 끄기
-              controller: _nameController,
-              onSaved: (value) => _nameController.text = value!.trim(),
-              style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
-              decoration: InputDecoration(
-                filled: true, // 뒷 배경 색채우기
-                fillColor: Colors.white,
-                labelText: 'NAME',
-                prefixIconConstraints:
-                    const BoxConstraints(minWidth: 20, maxHeight: 20),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 10),
-                ),
-                hintText: 'name 입력',
-                contentPadding:
-                    const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(3)),
-              ),
-            ),
-          ),
           Container(
               margin: const EdgeInsets.all(6),
               padding: const EdgeInsets.symmetric(horizontal: 9),
@@ -304,7 +184,8 @@ class FindUserWidgetState extends State<FindUserWidget>
         ]));
   }
 
-  Widget _buildSubmitButton(BuildContext context) {
+  // 비밀번호 변경하는 버튼
+  Widget _changepassoword(BuildContext context) {
     return Container(
         padding: const EdgeInsets.only(left: 15, right: 15),
         margin: EdgeInsets.only(top: 30),
@@ -313,35 +194,20 @@ class FindUserWidgetState extends State<FindUserWidget>
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
             onPressed: () {
-              if (_tabController.index == 0) {
-                _eformKey.currentState!.validate();
-                _eformKey.currentState!.save();
-                //이름이 비었을경우
-                if (_nameController.text.isEmpty) {
-                  _focusNodename.requestFocus();
-                }
-                //email이 비었을 경우
-                else if (_emailController.text.isEmpty) {
-                  _focusNodeemail.requestFocus();
-                }
-              } else if (_tabController.index == 1) {
-                _pformKey.currentState!.validate();
-                _pformKey.currentState!.save();
-                if (_nameController.text.isEmpty) {
-                  _focusNodename.requestFocus();
-                }
-                //phone이 비었을 경우
-                else if (_phoneController.text.isEmpty) {
-                  _focusNodephone.requestFocus();
-                }
+              _pformKey.currentState!.validate();
+              _pformKey.currentState!.save();
+              //이름이 비었을경우
+              if (_nameController.text.isEmpty) {
+                _focusNodename.requestFocus();
               }
-              // 유효성 검사 통과할 경우 provider 로직 실행 후 정상인 경우만 pass
-              // if ( ){
-              // } else {
-              // }
-              // Navigator.pushNamed(context, 'findidresult');
-
-              //
+              //email이 비었을 경우
+              else if (_emailController.text.isEmpty) {
+                _focusNodeemail.requestFocus();
+              } else if (_phoneController.text.isEmpty) {
+                _focusNodephone.requestFocus();
+              }
+              // if~else 추가 필요
+              Navigator.pushNamed(context, 'changepassword');
             },
             style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -363,13 +229,13 @@ class FindUserWidgetState extends State<FindUserWidget>
               ),
             ),
             child: const Text(
-              "아이디 찾기",
+              "비밀번호 변경",
               style: TextStyle(fontSize: 16),
             )));
   }
 
-  // 비밀번호 찾으러가는 버튼
-  Widget _findpassoword(BuildContext context) {
+  // 로그인 페이지 이동 버튼
+  Widget _loginpage(BuildContext context) {
     return Container(
         padding: const EdgeInsets.only(left: 15, right: 15),
         margin: EdgeInsets.only(top: 30),
@@ -378,7 +244,7 @@ class FindUserWidgetState extends State<FindUserWidget>
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
             onPressed: () {
-              Navigator.pushNamed(context, 'findpw');
+              Navigator.pushNamed(context, 'login');
             },
             style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -400,7 +266,7 @@ class FindUserWidgetState extends State<FindUserWidget>
               ),
             ),
             child: const Text(
-              "비밀번호 찾기",
+              "로그인",
               style: TextStyle(fontSize: 16),
             )));
   }
