@@ -7,6 +7,7 @@ import 'package:flutter_application_template/src/screens/splash.dart';
 import 'package:flutter_application_template/src/screens/login.dart';
 import 'package:flutter_application_template/src/screens/home.dart';
 import 'package:flutter_application_template/src/screens/find_pw.dart';
+import 'package:flutter_application_template/src/widgets/findpw_widget.dart';
 
 class Routers {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -24,9 +25,10 @@ class Routers {
       case 'findidresult':
         return MaterialPageRoute(builder: (_) => FindIdResult());
       case 'changepassword':
-        return MaterialPageRoute(builder: (_) => ChangePassword());
+        return MaterialPageRoute(
+            builder: (context) => ChangePassword(), settings: settings);
       case 'findpw':
-        return MaterialPageRoute(builder: (_) => FindPw());
+        return MaterialPageRoute(builder: (context) => FindPw());
 
       default:
         return MaterialPageRoute(builder: (_) {

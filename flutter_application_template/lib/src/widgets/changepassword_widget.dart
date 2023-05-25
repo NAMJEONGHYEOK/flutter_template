@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_template/src/screens/change_password.dart';
+import 'package:flutter_application_template/src/widgets/findpw_widget.dart';
 import 'package:flutter_application_template/src/widgets/gologinbutton_widget.dart';
 
 class ChangePasswordWidget extends StatefulWidget {
@@ -7,14 +9,13 @@ class ChangePasswordWidget extends StatefulWidget {
 }
 
 class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
-  final _formKey = GlobalKey<FormState>();
+  final _aformKey = GlobalKey<FormState>();
   final FocusNode _focusNoderepassword = FocusNode();
   final FocusNode _focusNodepassword = FocusNode();
   final _repasswordController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _passwordVisible = false;
   bool _repasswordVisible = false;
-
   @override
   void initState() {
     super.initState();
@@ -69,8 +70,9 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
   }
 
   Widget _inputform(BuildContext context) {
+    // print(userid.toString());
     return Form(
-        key: _formKey,
+        key: _aformKey,
         autovalidateMode: AutovalidateMode.always,
         child: Column(
           children: [
@@ -80,9 +82,12 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
               child: TextFormField(
                 focusNode: _focusNodepassword,
                 validator: (password) {
-                  // 아이디와 동일한지 검사필요
                   if (password!.isEmpty) {
-                    return "새로운 패스워드를 입력해 주세요.";
+                    return "새로운 비밀번호를 입력해주세요.";
+                  } else if (!RegExp(
+                          r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?~^<>,.&+=])[A-Za-z\d$@$!%*#?~^<>,.&+=]{8,15}$')
+                      .hasMatch(password)) {
+                    return '특수문자,대문자,숫자를 8자 이상 15자 이내로 작성해주세요.';
                   }
                   return null;
                 },
@@ -131,6 +136,8 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                   if (repassword!.isEmpty) {
                     // 위 입력과 동일한지 검사필요
                     return "새로운 패스워드를 입력해 주세요.";
+                  } else if (repassword != _passwordController.text) {
+                    return "비밀번호가 일치하지 않습니다";
                   }
                   return null;
                 },

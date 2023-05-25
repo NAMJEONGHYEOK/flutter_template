@@ -8,8 +8,23 @@ class FindIdResultWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         child: Column(
-      children: [_changepassoword(context), GoLoginButton()],
+      children: [
+        _resultid(context),
+        _changepassoword(context),
+        GoLoginButton()
+      ],
     ));
+  }
+
+  Widget _resultid(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.all(10),
+      child: Text(
+        '\u2022 아이디 결과 출력',
+        style: TextStyle(fontSize: 18),
+      ),
+    );
   }
 
   // 비밀번호 변경하러가는 버튼
@@ -22,7 +37,8 @@ class FindIdResultWidget extends StatelessWidget {
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
             onPressed: () {
-              Navigator.pushNamed(context, 'changepassword');
+              Navigator.pushNamed(context, 'changepassword',
+                  arguments: 'userid');
             },
             style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(

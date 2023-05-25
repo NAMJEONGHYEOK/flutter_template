@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: MyTheme.theme,
-      initialRoute: 'changepassword',
+      initialRoute: 'findpw',
       onGenerateRoute: Routers.generateRoute,
     );
   }

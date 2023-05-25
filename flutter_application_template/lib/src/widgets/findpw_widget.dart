@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_template/src/screens/change_password.dart';
+import 'package:flutter_application_template/src/widgets/changepassword_widget.dart';
 
 class FindPwWidget extends StatefulWidget {
   @override
@@ -7,7 +9,7 @@ class FindPwWidget extends StatefulWidget {
 }
 
 class FindPwWidgetState extends State<FindPwWidget> {
-  final _pformKey = GlobalKey<FormState>();
+  final _passfindformKey = GlobalKey<FormState>();
   final FocusNode _focusNodename = FocusNode();
   final FocusNode _focusNodeemail = FocusNode();
   final FocusNode _focusNodephone = FocusNode();
@@ -60,7 +62,7 @@ class FindPwWidgetState extends State<FindPwWidget> {
   // textformfield - onChange에서 error 확인 후 setState 로 vaildator에 전달하면 실시간 유효성 검사가능
   Widget _inputformpassword(BuildContext context) {
     return Form(
-        key: _pformKey,
+        key: _passfindformKey,
         autovalidateMode: _autovalidateMode,
         child: Column(children: [
           Container(
@@ -194,8 +196,8 @@ class FindPwWidgetState extends State<FindPwWidget> {
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
             onPressed: () {
-              _pformKey.currentState!.validate();
-              _pformKey.currentState!.save();
+              _passfindformKey.currentState!.validate();
+              _passfindformKey.currentState!.save();
               //이름이 비었을경우
               if (_nameController.text.isEmpty) {
                 _focusNodename.requestFocus();
@@ -207,7 +209,12 @@ class FindPwWidgetState extends State<FindPwWidget> {
                 _focusNodephone.requestFocus();
               }
               // if~else 추가 필요
-              Navigator.pushNamed(context, 'changepassword');
+
+              Navigator.pushNamed(
+                context,
+                'changepassword',
+              );
+              // arguments: _nameController.text);
             },
             style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
