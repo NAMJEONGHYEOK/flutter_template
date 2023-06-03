@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_template/src/screens/change_password.dart';
-import 'package:flutter_application_template/src/widgets/findpw_widget.dart';
-import 'package:flutter_application_template/src/widgets/gologinbutton_widget.dart';
+import 'package:flutter_application_template/src/widgets/buttons_widget.dart';
+import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
 
 class ChangePasswordWidget extends StatefulWidget {
   @override
@@ -14,8 +13,7 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
   final FocusNode _focusNodepassword = FocusNode();
   final _repasswordController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _passwordVisible = false;
-  bool _repasswordVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -45,8 +43,8 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
             // 컬럼 리스트로 각각의 위젯 출력
             _topLineText(context), // title 글씨
             _inputform(context),
-            _okbutton(),
-            _canclebutton()
+            Okbutton(),
+            CancleButton()
             // GoLoginButton()
           ],
         ));
@@ -76,180 +74,9 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
         autovalidateMode: AutovalidateMode.always,
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.all(6),
-              padding: const EdgeInsets.symmetric(horizontal: 9),
-              child: TextFormField(
-                focusNode: _focusNodepassword,
-                validator: (password) {
-                  if (password!.isEmpty) {
-                    return "새로운 비밀번호를 입력해주세요.";
-                  } else if (!RegExp(
-                          r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?~^<>,.&+=])[A-Za-z\d$@$!%*#?~^<>,.&+=]{8,15}$')
-                      .hasMatch(password)) {
-                    return '특수문자,대문자,숫자를 8자 이상 15자 이내로 작성해주세요.';
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.text, // id text형으로 입력받기
-                autocorrect: false, //자동완성 끄기.
-                autofocus: false, // 자동 초점설정 끄기
-                controller: _passwordController,
-                onSaved: (value) => _passwordController.text = value!.trim(),
-                style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
-                decoration: InputDecoration(
-                  errorStyle: TextStyle(fontSize: 12, color: Colors.red),
-                  filled: true, // 뒷 배경 색채우기
-                  fillColor: Colors.white,
-                  labelText: 'new PASSWORD',
-                  prefixIconConstraints:
-                      const BoxConstraints(minWidth: 20, maxHeight: 20),
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 10),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: _passwordVisible
-                        ? Icon(Icons.visibility)
-                        : Icon(Icons.visibility_off),
-                    color: Colors.grey,
-                    onPressed: () {
-                      setState(() {
-                        _passwordVisible = !_passwordVisible;
-                      });
-                    },
-                  ),
-
-                  hintText: '비밀번호 입력',
-                  contentPadding:
-                      const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(3)),
-                ),
-                obscureText: !_passwordVisible, // 비밀번호 안보이게 처리.
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(6),
-              padding: const EdgeInsets.symmetric(horizontal: 9),
-              child: TextFormField(
-                validator: (repassword) {
-                  if (repassword!.isEmpty) {
-                    // 위 입력과 동일한지 검사필요
-                    return "새로운 패스워드를 입력해 주세요.";
-                  } else if (repassword != _passwordController.text) {
-                    return "비밀번호가 일치하지 않습니다";
-                  }
-                  return null;
-                },
-                focusNode: _focusNoderepassword,
-                autocorrect: false,
-                autofocus: false,
-                controller: _repasswordController,
-                onSaved: (value) => _passwordController.text = value!.trim(),
-                keyboardType: TextInputType.text,
-                style: const TextStyle(fontSize: 15),
-                decoration: InputDecoration(
-                  errorStyle: TextStyle(fontSize: 12, color: Colors.red),
-                  filled: true, // 뒷 배경 색채우기
-                  fillColor: Colors.white,
-                  labelText: 're new PASSWORD',
-                  prefixIconConstraints:
-                      const BoxConstraints(minWidth: 20, maxHeight: 20),
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 10),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: _repasswordVisible
-                        ? Icon(Icons.visibility)
-                        : Icon(Icons.visibility_off),
-                    color: Colors.grey,
-                    onPressed: () {
-                      setState(() {
-                        _repasswordVisible = !_repasswordVisible;
-                      });
-                    },
-                  ),
-                  hintText: '비밀번호 입력',
-                  contentPadding:
-                      const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(3)),
-                ),
-                obscureText: !_repasswordVisible, // 비밀번호 안보이게 처리.
-              ),
-            )
+            Password(_passwordController, _focusNodepassword),
+            RePassword(_repasswordController, _focusNoderepassword)
           ],
         ));
-  }
-
-  Widget _okbutton() {
-    return Container(
-      margin: EdgeInsets.all(20),
-      width: 300,
-      height: 60,
-      child: ElevatedButton(
-        onPressed: () {
-          // db 통신 if ~else 추가
-          Navigator.pushNamed(context, 'login');
-        },
-        child: Text(
-          "확인",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-        ),
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(3))),
-          foregroundColor: MaterialStateProperty.all(
-            //모든 상태에따라 아래 색상표기
-            Colors.white, // 글자색
-          ),
-          backgroundColor: MaterialStateProperty.resolveWith(
-            // 버튼 상태에따라 색상 변경
-            (states) {
-              if (states.contains(MaterialState.pressed)) {
-                return Colors.grey;
-              } else {
-                return Colors.blue;
-              }
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _canclebutton() {
-    return Container(
-      margin: EdgeInsets.all(10),
-      width: 300,
-      height: 60,
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.pushNamed(context, 'login');
-        },
-        child: Text(
-          "취소",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-        ),
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(3))),
-          foregroundColor: MaterialStateProperty.all(
-            //모든 상태에따라 아래 색상표기
-            Colors.white, // 글자색
-          ),
-          backgroundColor: MaterialStateProperty.resolveWith(
-            // 버튼 상태에따라 색상 변경
-            (states) {
-              if (states.contains(MaterialState.pressed)) {
-                return Colors.grey;
-              } else {
-                return Colors.blue;
-              }
-            },
-          ),
-        ),
-      ),
-    );
   }
 }

@@ -1,7 +1,7 @@
 //StatelessWidget 으로 작성
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_template/src/widgets/gologinbutton_widget.dart';
+import 'package:flutter_application_template/src/widgets/buttons_widget.dart';
 
 class FindIdResultWidget extends StatelessWidget {
   @override

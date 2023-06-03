@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_template/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +16,6 @@ class LoginWidgetState extends State<LoginWidget> {
   final FocusNode _focusNodepassword = FocusNode();
   final _idController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _passwordVisible = false;
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
 
   @override
@@ -75,92 +75,8 @@ class LoginWidgetState extends State<LoginWidget> {
         autovalidateMode: _autovalidateMode,
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.all(6),
-              padding: const EdgeInsets.symmetric(horizontal: 9),
-              child: TextFormField(
-                focusNode: _focusNodeid,
-                validator: (id) {
-                  if (id!.isEmpty) {
-                    return "id를 입력해 주세요.";
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.text, // id text형으로 입력받기
-                autocorrect: false, //자동완성 끄기.
-                autofocus: false, // 자동 초점설정 끄기
-                controller: _idController,
-                onSaved: (value) => _idController.text = value!.trim(),
-                style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
-                decoration: InputDecoration(
-                  filled: true, // 뒷 배경 색채우기
-                  fillColor: Colors.white,
-                  labelText: 'ID',
-                  prefixIconConstraints:
-                      const BoxConstraints(minWidth: 20, maxHeight: 20),
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 10),
-                  ),
-                  hintText: '아이디 입력',
-                  contentPadding:
-                      const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(3)),
-                ),
-              ),
-            ),
-            Container(
-                margin: const EdgeInsets.all(6),
-                padding: const EdgeInsets.symmetric(horizontal: 9),
-                child: Consumer<AuthProvider>(
-                  // 아이콘 때문에 상태 생산/소비 동시 사용 - consumer
-                  builder: (context, isObscure, child) {
-                    return TextFormField(
-                      validator: (password) {
-                        if (password!.isEmpty) {
-                          return "password를 입력해 주세요.";
-                        }
-                        return null;
-                      },
-                      focusNode: _focusNodepassword,
-                      autocorrect: false,
-                      autofocus: false,
-                      controller: _passwordController,
-                      onSaved: (value) =>
-                          _passwordController.text = value!.trim(),
-                      keyboardType: TextInputType.text,
-                      style: const TextStyle(fontSize: 15),
-                      decoration: InputDecoration(
-                        errorStyle: TextStyle(fontSize: 12, color: Colors.red),
-                        filled: true, // 뒷 배경 색채우기
-                        fillColor: Colors.white,
-                        labelText: 'PASSWORD',
-                        prefixIconConstraints:
-                            const BoxConstraints(minWidth: 20, maxHeight: 20),
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.only(left: 15, right: 10),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: _passwordVisible
-                              ? Icon(Icons.visibility)
-                              : Icon(Icons.visibility_off),
-                          color: Colors.grey,
-                          onPressed: () {
-                            setState(() {
-                              _passwordVisible = !_passwordVisible;
-                            });
-                          },
-                        ),
-                        hintText: '비밀번호 입력',
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(3)),
-                      ),
-                      obscureText: !_passwordVisible, // 비밀번호 안보이게 처리.
-                    );
-                  },
-                ))
+            Id(_idController, _focusNodeid),
+            Password(_passwordController, _focusNodepassword)
           ],
         ));
   }

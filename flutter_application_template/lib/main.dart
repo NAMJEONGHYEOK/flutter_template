@@ -8,6 +8,7 @@ import 'package:flutter_application_template/src/utils/style.dart' as MyTheme;
 void main() {
   runApp(MultiProvider(
     providers: [
+      // 인증상태는 전역 provider로 관리한다.
       ChangeNotifierProvider(
         create: (_) => AuthProvider(),
         child: Login(),
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: MyTheme.theme,
-      initialRoute: 'findpw',
+      initialRoute: 'login',
       onGenerateRoute: Routers.generateRoute,
     );
   }

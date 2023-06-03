@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_application_template/src/screens/find_id_result.dart';
+import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
 
 class FindUserWidget extends StatefulWidget {
   @override
@@ -22,7 +21,6 @@ class FindUserWidgetState extends State<FindUserWidget>
   // 화면 전환 에니메이션
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
   late TabController _tabController;
-  int _tabbarIndex = 0;
 
   @override
   void initState() {
@@ -35,11 +33,10 @@ class FindUserWidgetState extends State<FindUserWidget>
     // TabController의 인덱스 변경 이벤트를 감지하는 리스너 등록
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
-        _nameController.clear();
+        // _nameController.clear();
         _emailController.clear();
         _phoneController.clear();
         _pnameController.clear();
-        _tabbarIndex = _tabController.index;
         setState(() {
           _autovalidateMode = AutovalidateMode.disabled;
         });
@@ -139,80 +136,8 @@ class FindUserWidgetState extends State<FindUserWidget>
         key: _eformKey,
         autovalidateMode: _autovalidateMode,
         child: Column(children: [
-          Container(
-            margin: const EdgeInsets.all(6),
-            padding: const EdgeInsets.symmetric(horizontal: 9),
-            child: TextFormField(
-              focusNode: _focusNodename,
-              validator: (name) {
-                if (name!.isEmpty) {
-                  return "이름을 입력해 주세요.";
-                } else if (!RegExp(r'^[ㄱ-ㅎ|가-힣|a-z|A-Z|\s]+$').hasMatch(name)) {
-                  return '한글 또는 영어만 입력 가능합니다';
-                }
-                return null;
-              },
-              keyboardType: TextInputType.text, // name text형으로 입력받기
-              autocorrect: false, //자동완성 끄기.
-              autofocus: true, // 자동 초점설정 끄기
-              controller: _nameController,
-              onSaved: (value) => _nameController.text = value!.trim(),
-              style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
-              decoration: InputDecoration(
-                filled: true, // 뒷 배경 색채우기
-                fillColor: Colors.white,
-                labelText: 'NAME',
-                prefixIconConstraints:
-                    const BoxConstraints(minWidth: 20, maxHeight: 20),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 10),
-                ),
-                hintText: 'name 입력',
-                contentPadding:
-                    const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(3)),
-              ),
-            ),
-          ),
-          Container(
-              margin: const EdgeInsets.all(6),
-              padding: const EdgeInsets.symmetric(horizontal: 9),
-              child: TextFormField(
-                validator: (email) {
-                  if (email!.isEmpty) {
-                    return "email를 입력해 주세요.";
-                  } else if (!RegExp(
-                          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                      .hasMatch(email)) {
-                    return "email 형식이 아닙니다. email을 입력해 주세요";
-                  }
-                  return null;
-                },
-                focusNode: _focusNodeemail,
-                autocorrect: false,
-                autofocus: false,
-                controller: _emailController,
-                onSaved: (value) => _emailController.text = value!.trim(),
-                keyboardType: TextInputType.text,
-                style: const TextStyle(fontSize: 15),
-                decoration: InputDecoration(
-                  errorStyle: TextStyle(fontSize: 12, color: Colors.red),
-                  filled: true, // 뒷 배경 색채우기
-                  fillColor: Colors.white,
-                  labelText: 'EMAIL',
-                  prefixIconConstraints:
-                      const BoxConstraints(minWidth: 20, maxHeight: 20),
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 10),
-                  ),
-                  hintText: 'email 입력',
-                  contentPadding:
-                      const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(3)),
-                ),
-              )),
+          Name(_nameController, _focusNodename),
+          Email(_emailController, _focusNodeemail),
         ]));
   }
 
@@ -221,86 +146,8 @@ class FindUserWidgetState extends State<FindUserWidget>
         key: _pformKey,
         autovalidateMode: _autovalidateMode,
         child: Column(children: [
-          Container(
-            margin: const EdgeInsets.all(6),
-            padding: const EdgeInsets.symmetric(horizontal: 9),
-            child: TextFormField(
-              focusNode: _focusNodename,
-              validator: (name) {
-                if (name!.isEmpty) {
-                  return "이름을 입력해 주세요.";
-                } else if (!RegExp(r'^[ㄱ-ㅎ|가-힣|a-z|A-Z|\s]+$').hasMatch(name)) {
-                  return '한글 또는 영어만 입력 가능합니다';
-                }
-                return null;
-              },
-              keyboardType: TextInputType.text, // id text형으로 입력받기
-              autocorrect: false, //자동완성 끄기.
-              autofocus: true, // 자동 초점설정 끄기
-              controller: _nameController,
-              onSaved: (value) => _nameController.text = value!.trim(),
-              style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
-              decoration: InputDecoration(
-                filled: true, // 뒷 배경 색채우기
-                fillColor: Colors.white,
-                labelText: 'NAME',
-                prefixIconConstraints:
-                    const BoxConstraints(minWidth: 20, maxHeight: 20),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 10),
-                ),
-                hintText: 'name 입력',
-                contentPadding:
-                    const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(3)),
-              ),
-            ),
-          ),
-          Container(
-              margin: const EdgeInsets.all(6),
-              padding: const EdgeInsets.symmetric(horizontal: 9),
-              child: TextFormField(
-                validator: (phone) {
-                  if (phone!.isEmpty) {
-                    return "휴대폰 번호를 입력해 주세요.";
-                  } else if (!RegExp(
-                          r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$')
-                      .hasMatch(phone)) {
-                    return "-없이 '01012345678' 으로 입력해주세요";
-                  } else if (phone.length != 11) {
-                    return "010을 포함한 11자리 모두 입력해주세요";
-                  }
-                  return null;
-                },
-                focusNode: _focusNodephone,
-                autocorrect: false,
-                autofocus: false,
-                controller: _phoneController,
-                onSaved: (value) => _phoneController.text = value!.trim(),
-                keyboardType: TextInputType.number,
-                style: const TextStyle(fontSize: 15),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                maxLength: 11,
-                decoration: InputDecoration(
-                  errorStyle: TextStyle(fontSize: 12, color: Colors.red),
-                  filled: true, // 뒷 배경 색채우기
-                  fillColor: Colors.white,
-                  labelText: 'PHONE',
-                  prefixIconConstraints:
-                      const BoxConstraints(minWidth: 20, maxHeight: 20),
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 10),
-                  ),
-                  hintText: 'Phone 입력',
-                  contentPadding:
-                      const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(3)),
-                ),
-              )),
+          Name(_nameController, _focusNodename),
+          Phone(_phoneController, _focusNodephone)
         ]));
   }
 

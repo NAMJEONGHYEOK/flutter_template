@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_template/src/models/userinfo.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../repositories/authrepository.dart';

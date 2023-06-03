@@ -7,15 +7,19 @@ class SignUp extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false, // 키보드 화면 밀림방지
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         backgroundColor: Colors.white,
-        title: const Text(
-          "회원가입",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-            color: Colors.black,
-          ),
+        // title: const Text(
+        //   "회원가입",
+        //   style: TextStyle(
+        //     fontWeight: FontWeight.w600,
+        //     fontSize: 20,
+        //     color: Colors.black,
+        //   ),
+        // ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         centerTitle: true,
       ),
