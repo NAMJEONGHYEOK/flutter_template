@@ -1,22 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../repositories/authrepository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-enum Status { unauthentication, authenticatied } // 비인증, 인증 중, 인증 완료
+enum Status {
+  unauthentication,
+  authenticating,
+  authenticatied
+} // 비인증, 인증 중, 인증 완료
+
+enum LoginPlatform {
+  none,
+  google,
+  email,
+  // 다른 로그인 플랫폼 추가 가능
+}
 
 class AuthProvider extends ChangeNotifier {
   final _storage = const FlutterSecureStorage();
   final bool _isLoggedIn = false; // _추가하여 외부접근 방지.
   bool _isAutoLogin = false;
   String? _accessToken = null;
+  late LoginPlatform _loginPlatform = LoginPlatform.none;
 
   // late User _currentUser;
 
   bool get isAutoLogin => _isAutoLogin;
   bool get isLoggedIn => _isLoggedIn;
   String? get accessToken => _accessToken;
+  LoginPlatform get loginPlatform => _loginPlatform;
 
   final AuthRepository _authRepository = AuthRepository();
 
@@ -26,6 +40,32 @@ class AuthProvider extends ChangeNotifier {
         key: 'isAutoLogin', value: "${_isAutoLogin}"); // int or string 만 저장가능
     print(autovalue);
     notifyListeners();
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+          clientId:
+              "744975205181-1a8otu1c1osslrtrqd0vuitd3k2hbm1j.apps.googleusercontent.com",
+          scopes: [
+            'email',
+            'profile',
+            'openid'
+
+            // 다른 필요한 스코프도 여기에 추가할 수 있습니다.
+          ]).signIn();
+
+      if (googleUser != null) {
+        print('name = ${googleUser.displayName}');
+        print('email = ${googleUser.email}');
+        print('id = ${googleUser.id}');
+
+        _loginPlatform = LoginPlatform.google;
+        notifyListeners();
+      }
+    } catch (error) {
+      print(error);
+    }
   }
 
   // access 토큰 getter,setter 저장
@@ -93,16 +133,31 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
-  Future<bool> logout(String token) async {
-    final response = await _authRepository.logout(token);
-    if (response.statusCode == 204) {
-      _accessToken = null;
-      await _storage.delete(key: 'access_token');
-      await _storage.delete(key: 'refresh_token');
-      notifyListeners();
-      return true;
+  // token - logout
+  Future<void> logout(String token) async {
+    switch (_loginPlatform) {
+      case LoginPlatform.email:
+        {
+          final response = await _authRepository.logout(token);
+          if (response.statusCode == 204) {
+            _accessToken = null;
+            await _storage.delete(key: 'access_token');
+            await _storage.delete(key: 'refresh_token');
+            notifyListeners();
+          }
+        }
+      case LoginPlatform.google:
+        await GoogleSignIn().signOut();
+        break;
+      // case LoginPlatform.kakao:
+      //   break;
+      // case LoginPlatform.naver:
+      //   break;
+      // case LoginPlatform.apple:
+      // break;
+      case LoginPlatform.none:
+        break;
     }
-    return false;
   }
 
   void Listener() {

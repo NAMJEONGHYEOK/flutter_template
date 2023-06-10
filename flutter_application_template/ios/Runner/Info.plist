@@ -26,6 +26,19 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
+	<key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <!-- facebook login -->
+        <!-- <string>fbAPP-ID</string> -->
+
+        <!-- google login -->
+        <string>com.googleusercontent.apps.744975205181-2nd9nb3ei86inn66ng5dn3seo5gb8i4u</string>
+      </array>
+      </dict>
+    </array>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>

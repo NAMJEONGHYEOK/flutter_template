@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_application_template/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +30,7 @@ class LoginWidgetState extends State<LoginWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return Container(
         // 기본 컨테이너 단위로 묶어서
         padding: const EdgeInsets.all(15.0), // 컨테이너 페딩추가.
@@ -44,6 +46,8 @@ class LoginWidgetState extends State<LoginWidget> {
             _inputform(context),
             _findidpassword(context),
             _buildSubmitButton(context),
+            _divider(),
+            _OauthloginButton("googlebutton", authProvider.signInWithGoogle),
             _signupline(),
           ],
         ));
@@ -161,13 +165,6 @@ class LoginWidgetState extends State<LoginWidget> {
                   _showDialog(context, "로그인 실패");
                 }
 //               // ##
-//               final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-// // Access Token 저장
-// authProvider.accessToken = 'your_access_token_here';
-
-// // Access Token 삭제
-// authProvider.deleteAccessToken();
 
                 // Navigator.pushNamed(context, 'home');
 
@@ -207,6 +204,48 @@ class LoginWidgetState extends State<LoginWidget> {
               "Login",
               style: TextStyle(fontSize: 16),
             )));
+  }
+
+  Widget _divider() {
+    return Container(
+        margin: EdgeInsets.all(10),
+        child: Row(children: <Widget>[
+          Expanded(
+            child: Container(
+                margin: const EdgeInsets.only(left: 10.0, right: 15.0),
+                child: const Divider(
+                  color: Colors.black,
+                  height: 1,
+                )),
+          ),
+          Text("OR"),
+          Expanded(
+            child: Container(
+                margin: const EdgeInsets.only(left: 15.0, right: 10.0),
+                child: const Divider(
+                  color: Colors.black,
+                  height: 1,
+                )),
+          ),
+        ]));
+  }
+
+  Widget _OauthloginButton(String path, onPress) {
+    return InkWell(
+      onTap: () {
+        onPress();
+        // print("push google");
+      },
+      child: Ink(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        child: Image.asset(
+          'assets/$path.png',
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 
   Widget _signupline() {

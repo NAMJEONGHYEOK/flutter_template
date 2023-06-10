@@ -44,9 +44,9 @@ class HomeWidgetState extends State<HomeWidget> {
                   //         .logout(_refreshToken!) ==
                   //     true)
 
-                  print(await context
-                      .read<AuthProvider>()
-                      .logout(_refreshToken!));
+                  //  print(await context
+                  //       .read<AuthProvider>()
+                  //       .logout(_refreshToken!));
 
                   {
                     Navigator.pushNamed(context, 'login');
