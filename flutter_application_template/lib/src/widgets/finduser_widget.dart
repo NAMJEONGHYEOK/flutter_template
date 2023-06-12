@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
+import 'package:flutter_application_template/src/widgets/textinform_widget.dart';
 
 class FindUserWidget extends StatefulWidget {
   @override
@@ -15,7 +16,6 @@ class FindUserWidgetState extends State<FindUserWidget>
   final FocusNode _focusNodeemail = FocusNode();
   final FocusNode _focusNodephone = FocusNode();
   final _nameController = TextEditingController();
-  final _pnameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   // 화면 전환 에니메이션
@@ -36,7 +36,6 @@ class FindUserWidgetState extends State<FindUserWidget>
         // _nameController.clear();
         _emailController.clear();
         _phoneController.clear();
-        _pnameController.clear();
         setState(() {
           _autovalidateMode = AutovalidateMode.disabled;
         });
@@ -50,7 +49,6 @@ class FindUserWidgetState extends State<FindUserWidget>
     _focusNodeemail.dispose();
     _focusNodephone.dispose();
     _tabController.dispose();
-    _pnameController.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -97,10 +95,13 @@ class FindUserWidgetState extends State<FindUserWidget>
   Widget _tabPagefirst(BuildContext context) {
     return Container(
       child: Column(children: [
-        _topLineText(context),
+        const TextInformWidget(
+          message: "회원가입 시 등록한 정보로 인증을 통해\n아이디를 찾거나 패스워드를 변경할 수 있습니다.",
+          textAlign: TextAlign.center,
+        ),
         _inputform_email(context),
+        _buildSubmitButton(context),
         _findpassoword(context),
-        _buildSubmitButton(context)
       ]),
     );
   }
@@ -109,24 +110,13 @@ class FindUserWidgetState extends State<FindUserWidget>
   Widget _tabPagesecond(BuildContext context) {
     return Container(
       child: Column(children: [
-        _topLineText(context),
+        const TextInformWidget(
+            message: "회원가입 시 등록한 정보로 인증을 통해\n아이디를 찾거나 패스워드를 변경할 수 있습니다.",
+            textAlign: TextAlign.center),
         _inputform_phone(context),
+        _buildSubmitButton(context),
         _findpassoword(context),
-        _buildSubmitButton(context)
       ]),
-    );
-  }
-
-  Widget _topLineText(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.only(top: 50, bottom: 50),
-      width: 400,
-      child: const Text(
-        "회원가입 시 등록한 정보로 인증을 통해 아이디를 찾거나 패스워드를 변경할 수 있습니다.",
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 

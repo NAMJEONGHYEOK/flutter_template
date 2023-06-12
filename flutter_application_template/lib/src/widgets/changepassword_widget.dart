@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_template/src/widgets/buttons_widget.dart';
 import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
+import 'package:flutter_application_template/src/widgets/textinform_widget.dart';
 
 class ChangePasswordWidget extends StatefulWidget {
   @override
@@ -41,30 +42,19 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
 
           children: <Widget>[
             // 컬럼 리스트로 각각의 위젯 출력
-            _topLineText(context), // title 글씨
+            const TextInformWidget(
+                message: "\u2022 8~12자 영문,숫자,특수문자를 사용할 수 있습니다.\n"
+                    "\u2022 한글과 공백문자는 사용할 수 없습니다.\n"
+                    "\u2022 영문 대소문자를 구분하거나 꼭 확인해주세요.\n"
+                    "\u2022 아이디와 동일하게 설정할 수 없습니다.\n"
+                    "\u2022 같은 문자의 반복 또는 쉬운 비밀번호는 사용하지 마세요.\n",
+                textAlign: TextAlign.left), // title 글씨
             _inputform(context),
-            Okbutton(),
-            CancleButton()
+            Okbutton('login'),
+            CancleButton('login')
             // GoLoginButton()
           ],
         ));
-  }
-
-  Widget _topLineText(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.only(top: 50, bottom: 50),
-      width: 500,
-      child: const Text(
-        "\u2022 8~12자 영문,숫자,특수문자를 사용할 수 있습니다.\n"
-        "\u2022 한글과 공백문자는 사용할 수 없습니다.\n"
-        "\u2022 영문 대소문자를 구분하거나 꼭 확인해주세요.\n"
-        "\u2022 아이디와 동일하게 설정할 수 없습니다.\n"
-        "\u2022 같은 문자의 반복 또는 쉬운 비밀번호는 사용하지 마세요.\n",
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-        textAlign: TextAlign.left,
-      ),
-    );
   }
 
   Widget _inputform(BuildContext context) {
@@ -75,7 +65,8 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
         child: Column(
           children: [
             Password(_passwordController, _focusNodepassword),
-            RePassword(_repasswordController, _focusNoderepassword)
+            RePassword(_repasswordController, _focusNoderepassword,
+                _passwordController)
           ],
         ));
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
+import 'package:flutter_application_template/src/widgets/textinform_widget.dart';
 
 class FindPwWidget extends StatefulWidget {
   @override
@@ -8,22 +9,22 @@ class FindPwWidget extends StatefulWidget {
 
 class FindPwWidgetState extends State<FindPwWidget> {
   final _passfindformKey = GlobalKey<FormState>();
+  final FocusNode _focusNodeid = FocusNode();
   final FocusNode _focusNodename = FocusNode();
-  final FocusNode _focusNodeemail = FocusNode();
   final FocusNode _focusNodephone = FocusNode();
+  final _idController = TextEditingController();
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
 
   @override
   void dispose() {
     _autovalidateMode = AutovalidateMode.disabled;
+    _focusNodeid.dispose();
     _focusNodename.dispose();
-    _focusNodeemail.dispose();
     _focusNodephone.dispose();
+    _idController.dispose();
     _nameController.dispose();
-    _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
   }
@@ -35,24 +36,14 @@ class FindPwWidgetState extends State<FindPwWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _topLineText(context),
+          const TextInformWidget(
+            message: "비밀번호 변경이 필요한\n사용자 정보를 입력해주세요.",
+            textAlign: TextAlign.center,
+          ),
           _inputformpassword(context),
           _changepassoword(context),
           _loginpage(context)
         ],
-      ),
-    );
-  }
-
-  Widget _topLineText(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.only(top: 50, bottom: 50),
-      width: 400,
-      child: const Text(
-        "새 비밀번호를 등록해주세요.",
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-        textAlign: TextAlign.center,
       ),
     );
   }
@@ -63,8 +54,8 @@ class FindPwWidgetState extends State<FindPwWidget> {
         key: _passfindformKey,
         autovalidateMode: _autovalidateMode,
         child: Column(children: [
+          Id(_idController, _focusNodeid),
           Name(_nameController, _focusNodename),
-          Email(_emailController, _focusNodeemail),
           Phone(_phoneController, _focusNodephone)
         ]));
   }
@@ -81,13 +72,13 @@ class FindPwWidgetState extends State<FindPwWidget> {
             onPressed: () {
               _passfindformKey.currentState!.validate();
               _passfindformKey.currentState!.save();
-              //이름이 비었을경우
-              if (_nameController.text.isEmpty) {
-                _focusNodename.requestFocus();
+              //id가 비었을경우
+              if (_idController.text.isEmpty) {
+                _focusNodeid.requestFocus();
               }
-              //email이 비었을 경우
-              else if (_emailController.text.isEmpty) {
-                _focusNodeemail.requestFocus();
+              //이름이 비었을 경우
+              else if (_nameController.text.isEmpty) {
+                _focusNodename.requestFocus();
               } else if (_phoneController.text.isEmpty) {
                 _focusNodephone.requestFocus();
               }

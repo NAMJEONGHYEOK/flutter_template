@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_template/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +12,7 @@ class Splash extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // 데이터를 불러오는 중이면 로딩 화면을 표시
-          return Material(
+          return const Material(
             child: Center(
               child: CircularProgressIndicator(),
             ),

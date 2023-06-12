@@ -98,7 +98,7 @@ class _IdState extends State<Id> {
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 15, right: 10),
           ),
-          hintText: '아이디 입력',
+          hintText: 'id 입력',
           contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(3)),
         ),
@@ -175,10 +175,12 @@ class _PasswordState extends State<Password> {
 }
 
 class RePassword extends StatefulWidget {
+  final TextEditingController _controllervalidate;
   final TextEditingController _controller;
   final FocusNode _focusnode;
   late bool _passwordVisible = false;
-  RePassword(this._controller, this._focusnode, {Key? key})
+  RePassword(this._controller, this._focusnode, this._controllervalidate,
+      {Key? key})
       : _passwordVisible = false,
         super(key: key);
   // String _message;
@@ -196,8 +198,8 @@ class _RePasswordState extends State<RePassword> {
         validator: (repassword) {
           if (repassword!.isEmpty) {
             // 위 입력과 동일한지 검사필요
-            return "패스워드를 입력해 주세요.";
-          } else if (repassword != widget._controller.text) {
+            return "비밀번호를 입력해 주세요.";
+          } else if (repassword != widget._controllervalidate.text) {
             return "비밀번호가 일치하지 않습니다";
           }
           return null;

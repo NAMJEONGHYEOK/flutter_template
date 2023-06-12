@@ -42,6 +42,9 @@ class GoLoginButton extends StatelessWidget {
 }
 
 class Okbutton extends StatelessWidget {
+  final String routename;
+  Okbutton(this.routename);
+
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(20),
@@ -50,7 +53,7 @@ class Okbutton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {
           // db 통신 if ~else 추가
-          Navigator.pushNamed(context, 'login');
+          Navigator.pushNamed(context, routename);
         },
         child: Text(
           "확인",
@@ -80,6 +83,9 @@ class Okbutton extends StatelessWidget {
 }
 
 class CancleButton extends StatelessWidget {
+  final String routename;
+  CancleButton(this.routename);
+
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10),
@@ -87,7 +93,7 @@ class CancleButton extends StatelessWidget {
       height: 60,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, 'login');
+          Navigator.pushNamed(context, routename);
         },
         child: Text(
           "취소",

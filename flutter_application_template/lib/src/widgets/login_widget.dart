@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_template/src/providers/alertdialog_provider.dart';
 import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
-import 'package:http/http.dart' as http;
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_application_template/src/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -157,29 +156,23 @@ class LoginWidgetState extends State<LoginWidget> {
               // }
               //입력칸이 전부 입려된 경우. 로그인 함수로 일치, 불일치 실행.
               else {
-                if (await context
-                    .read<AuthProvider>()
-                    .login(_idController.text, _passwordController.text)) {
-                  Navigator.pushNamed(context, 'home');
-                } else {
-                  _showDialog(context, "로그인 실패");
+                try {
+                  if (await context // 비동기 실행이 참일경우 이동
+                      .read<AuthProvider>()
+                      .login(_idController.text, _passwordController.text)) {
+                    Navigator.pushNamed(context, 'home');
+                  } else {
+                    // 아닐 경우 로그인 정보 불일치
+                    context
+                        .read<AlertDialogProvider>()
+                        .globalshowDialog(context, "로그인 실패 : 입력 정보 불일치");
+                  }
+                } catch (e) {
+                  context
+                      .read<AlertDialogProvider>()
+                      .globalshowDialog(context, "로그인 실패 : $e");
                 }
-//               // ##
-
-                // Navigator.pushNamed(context, 'home');
-
-                // if (!await context
-                //     .read<AuthProvider>()
-                //     .login(_idController.text, _passwordController.text)) {
-                //   _showDialog(context, '존재하지 않는 사용자 정보입니다');
-                // } else {
-                //   context.read<Loginbutton>().Listener();
-                // }
               }
-
-              //아직미처리..
-              // String errorMessage = '존재하지 않는 회원 정보입니다.';
-              // _showDialog(context, errorMessage);
             }, // alert 경고창 모듈 만들어서
             style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -269,32 +262,6 @@ class LoginWidgetState extends State<LoginWidget> {
               ))
         ],
       ),
-    );
-  }
-
-// 팝업창 함수.
-  void _showDialog(context, String contents) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-          title: new Text("다시 입력해주세요."),
-          content: SingleChildScrollView(child: new Text('$contents')),
-          actions: <Widget>[
-            Container(
-              child: TextButton(
-                child: const Text("Close"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

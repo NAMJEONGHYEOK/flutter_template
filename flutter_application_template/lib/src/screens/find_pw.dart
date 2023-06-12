@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_template/src/widgets/changepassword_widget.dart';
 import 'package:flutter_application_template/src/widgets/findpw_widget.dart';
 
 class FindPw extends StatelessWidget {

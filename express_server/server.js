@@ -96,8 +96,7 @@ const authMiddleware = async (req, res,conn) => {
 
 // 토큰 로그인 라우터
 app.post('/token_login' ,async (req, res) => {
-  const { access_token, refresh_token } = req.body;
-
+  
   // MariaDB에서 유저 정보 조회
   let conn;
   conn = await pool.getConnection();
@@ -126,7 +125,7 @@ app.post('/login', async (req, res) => {
       return res.status(400).send('id is required');
     }
     conn = await pool.getConnection();
-    const result = await conn.query(`SELECT * FROM user WHERE id = '${id}' and password ='${password}'`);
+    const result = await conn.query(`SELECT * FROM user WHERE id = '${id}' and password ='${password}'`); // 성공시 필요한 값만 리턴 or 전체리턴
     if (result.length === 0) {
       return res.status(400).send('Invalid ID or password');
     }
@@ -160,6 +159,12 @@ app.delete('/logout', async (req, res) => {
     if (conn) conn.release();
   }
 });
+
+
+// 만들어야 하는 리스트, 아이디 찾기(get),비밀번호 찾기(get),회원가입(post),비밀번호 변경(put)
+
+
+
 
 
 app.get('/', (req, res) => {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_template/src/utils/configs.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../repositories/authrepository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -25,6 +25,9 @@ class AuthProvider extends ChangeNotifier {
   String? _accessToken = null;
   late LoginPlatform _loginPlatform = LoginPlatform.none;
 
+  late GoogleSignIn _googleSignIn;
+  late GoogleSignInAccount? _googleUser;
+  GoogleSignInAccount? get googleUser => _googleUser;
   // late User _currentUser;
 
   bool get isAutoLogin => _isAutoLogin;
@@ -34,32 +37,36 @@ class AuthProvider extends ChangeNotifier {
 
   final AuthRepository _authRepository = AuthRepository();
 
-  void autologin(bool autovalue) async {
+  void autologin(bool autovalue) {
     _isAutoLogin = autovalue;
-    await _storage.write(
+    _storage.write(
         key: 'isAutoLogin', value: "${_isAutoLogin}"); // int or string 만 저장가능
-    print(autovalue);
+    // print(autovalue);
     notifyListeners();
+  }
+
+  AuthProvider() {
+    _googleSignIn = GoogleSignIn(
+      clientId: Configs.ClientID,
+      scopes: [
+        'email',
+        'profile',
+        'openid'
+
+        // 다른 필요한 스코프도 여기에 추가할 수 있습니다.
+      ],
+    );
   }
 
   Future<void> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn(
-          clientId:
-              "744975205181-1a8otu1c1osslrtrqd0vuitd3k2hbm1j.apps.googleusercontent.com",
-          scopes: [
-            'email',
-            'profile',
-            'openid'
-
-            // 다른 필요한 스코프도 여기에 추가할 수 있습니다.
-          ]).signIn();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser != null) {
         print('name = ${googleUser.displayName}');
         print('email = ${googleUser.email}');
         print('id = ${googleUser.id}');
-
+        // print('phone' = ${googleUser.});
         _loginPlatform = LoginPlatform.google;
         notifyListeners();
       }
@@ -147,7 +154,13 @@ class AuthProvider extends ChangeNotifier {
           }
         }
       case LoginPlatform.google:
-        await GoogleSignIn().signOut();
+        try {
+          await _googleSignIn.signOut();
+          _googleUser = null;
+          notifyListeners();
+        } catch (error) {
+          print(error);
+        }
         break;
       // case LoginPlatform.kakao:
       //   break;
