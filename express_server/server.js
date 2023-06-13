@@ -161,7 +161,121 @@ app.delete('/logout', async (req, res) => {
 });
 
 
-// 만들어야 하는 리스트, 아이디 찾기(get),비밀번호 찾기(get),회원가입(post),비밀번호 변경(put)
+// 만들어야 하는 리스트, 아이디 찾기(post) (개인정보는 post처리함),비밀번호 찾기(post),회원가입(post),비밀번호 변경(put) 
+app.post('/signup',async(req,res) => {
+  let conn;
+  try {
+    const id = req.body.id;
+    const password = req.body.password;
+    const name = req.body.name;
+    const email = req.body.email;
+    const phone = req.body.phone;
+    const type = req.body.type;
+
+    const userData = {
+      id,
+      password,
+      name,
+      email,
+      phone,
+      type
+    };
+
+    conn = await pool.getConnection();
+    await conn.query('INSERT INTO user VALUES (?, ?, ?, ?, ?, ?)', [
+      userData.id,
+      userData.password,
+      userData.name,
+      userData.email,
+      userData.phone,
+      userData.type,
+    ]);
+    res.json({result:'success',message:'signup'})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({result:'fail', message:'Server Error'});
+  } finally {
+    if (conn) conn.release();
+  }
+
+  
+})
+
+
+app.post('/findid-email',async(req,res) => {
+  let conn;
+  try {
+    const name = req.body.name;
+    const email = req.body.email;
+    conn = await pool.getConnection();
+    const result = await conn.query(`select id from user where name = '${name}' and email = '${email}'`);
+    res.json(result);
+
+  } catch (error) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  } finally {
+    if (conn) conn.release();
+  }
+
+})
+
+app.post('/findid-phone',async(req,res) => {
+  let conn;
+  try {
+    const name = req.body.name;
+    const phone = req.body.phone;
+    conn = await pool.getConnection();
+    const result = await conn.query(`select id from user where name = '${name}' and phone_num = '${phone}'`);
+    res.json(result);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  } finally {
+    if (conn) conn.release();
+  }
+
+})
+
+app.post('/findpassword',async(req,res) => {
+  let conn;
+  try {
+    const id = req.body.id;
+    const name = req.body.name;
+    const phone = req.body.phone;
+    conn = await pool.getConnection();
+    const result = await conn.query(`select * from user where id = '${id}' and name = '${name}' and phone_num = '${phone}'`);
+    res.json(result)
+   
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  } finally {
+    if (conn) conn.release();
+  }
+
+})
+
+
+app.put('/changepassword', async (req, res) => {
+  const id = req.body.id;
+  const password = req.body.password;
+
+  try {
+    const result = await pool.query('UPDATE user SET password = ? WHERE id = ?', [password, id]);
+
+    if (result.affectedRows === 1) {
+      res.status(200).json({ message: 'Password changed successfully' });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
 
 
 

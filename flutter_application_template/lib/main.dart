@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_template/src/providers/alertdialog_provider.dart';
 import 'package:flutter_application_template/src/providers/auth_provider.dart';
+import 'package:flutter_application_template/src/providers/userinfo_provider.dart';
 import 'package:flutter_application_template/src/routes/routes.dart';
 import 'package:flutter_application_template/src/screens/login.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,9 @@ void main() {
       ),
       ChangeNotifierProvider(
         create: (_) => AlertDialogProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => UserInfoProvider(),
       )
     ],
     child: MyApp(),

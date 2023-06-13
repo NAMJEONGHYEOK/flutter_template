@@ -33,6 +33,7 @@ class _EmailState extends State<Email> {
             } else if (!RegExp(
                     r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
                 .hasMatch(email)) {
+              widget._focusnode.requestFocus();
               return "email 형식이 아닙니다. email을 입력해 주세요";
             }
             return null;
@@ -80,6 +81,9 @@ class _IdState extends State<Id> {
         validator: (id) {
           if (id!.isEmpty) {
             return "id를 입력해 주세요.";
+          } else if (!RegExp(r'^[a-zA-Z0-9]*$').hasMatch(id)) {
+            widget._focusnode.requestFocus();
+            return '영문,숫자 조합만 입력할 수 있습니다';
           }
           return null;
         },
@@ -110,9 +114,11 @@ class _IdState extends State<Id> {
 class Password extends StatefulWidget {
   final TextEditingController _controller;
   final FocusNode _focusnode;
+  String? _id = null;
   bool _passwordVisible = false;
 
   Password(this._controller, this._focusnode, {super.key});
+  Password.withId(this._controller, this._focusnode, this._id, {super.key});
 
   @override
   _PasswordState createState() => _PasswordState();
@@ -132,13 +138,16 @@ class _PasswordState extends State<Password> {
           } else if (!RegExp(
                   r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?~^<>,.&+=])[A-Za-z\d$@$!%*#?~^<>,.&+=]{8,15}$')
               .hasMatch(password)) {
+            widget._focusnode.requestFocus();
             return '특수문자,대문자,숫자를 8자 이상 15자 이내로 작성해주세요.';
+          } else if (widget._id != null && widget._id == password) {
+            return '아이디와 패스워드를 다르게 설정해 주세요.';
           }
           return null;
         },
         keyboardType: TextInputType.text, // id text형으로 입력받기
         autocorrect: false, //자동완성 끄기.
-        autofocus: false, // 자동 초점설정 끄기
+        autofocus: true, // 자동 초점설정 끄기
         controller: widget._controller,
         onSaved: (value) => widget._controller.text = value!.trim(),
         style: const TextStyle(fontSize: 15), //글자입,출력 크기조정
@@ -198,6 +207,7 @@ class _RePasswordState extends State<RePassword> {
         validator: (repassword) {
           if (repassword!.isEmpty) {
             // 위 입력과 동일한지 검사필요
+            widget._focusnode.requestFocus();
             return "비밀번호를 입력해 주세요.";
           } else if (repassword != widget._controllervalidate.text) {
             return "비밀번호가 일치하지 않습니다";
@@ -261,6 +271,7 @@ class _NameState extends State<Name> {
           if (name!.isEmpty) {
             return "이름을 입력해 주세요.";
           } else if (!RegExp(r'^[ㄱ-ㅎ|가-힣|a-z|A-Z|\s]+$').hasMatch(name)) {
+            widget._focusnode.requestFocus();
             return '한글 또는 영어만 입력 가능합니다';
           }
           return null;
@@ -308,8 +319,10 @@ class _PhoneState extends State<Phone> {
               return "휴대폰 번호를 입력해 주세요.";
             } else if (!RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$')
                 .hasMatch(phone)) {
+              widget._focusnode.requestFocus();
               return "-없이 '01012345678' 으로 입력해주세요";
             } else if (phone.length != 11) {
+              widget._focusnode.requestFocus();
               return "010을 포함한 11자리 모두 입력해주세요";
             }
             return null;
@@ -323,6 +336,7 @@ class _PhoneState extends State<Phone> {
           style: const TextStyle(fontSize: 15),
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(11), // 11자리 제한
           ],
           maxLength: 11,
           decoration: InputDecoration(

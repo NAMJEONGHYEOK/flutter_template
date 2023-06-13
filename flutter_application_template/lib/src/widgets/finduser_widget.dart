@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_template/src/models/userinfo.dart';
+import 'package:flutter_application_template/src/providers/alertdialog_provider.dart';
+import 'package:flutter_application_template/src/providers/finduser_provier.dart';
+import 'package:flutter_application_template/src/providers/userinfo_provider.dart';
+import 'package:flutter_application_template/src/widgets/buttons_widget.dart';
 import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
 import 'package:flutter_application_template/src/widgets/textinform_widget.dart';
+import 'package:provider/provider.dart';
 
 class FindUserWidget extends StatefulWidget {
   @override
@@ -101,7 +107,7 @@ class FindUserWidgetState extends State<FindUserWidget>
         ),
         _inputform_email(context),
         _buildSubmitButton(context),
-        _findpassoword(context),
+        FindPassword(),
       ]),
     );
   }
@@ -115,7 +121,7 @@ class FindUserWidgetState extends State<FindUserWidget>
             textAlign: TextAlign.center),
         _inputform_phone(context),
         _buildSubmitButton(context),
-        _findpassoword(context),
+        FindPassword(),
       ]),
     );
   }
@@ -149,9 +155,8 @@ class FindUserWidgetState extends State<FindUserWidget>
         height: 60,
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
-            onPressed: () {
+            onPressed: () async {
               if (_tabController.index == 0) {
-                _eformKey.currentState!.validate();
                 _eformKey.currentState!.save();
                 //이름이 비었을경우
                 if (_nameController.text.isEmpty) {
@@ -160,9 +165,23 @@ class FindUserWidgetState extends State<FindUserWidget>
                 //email이 비었을 경우
                 else if (_emailController.text.isEmpty) {
                   _focusNodeemail.requestFocus();
+                } else if (!_eformKey.currentState!.validate()) {
+                } else {
+                  // 유효성 검사 통과할 경우 provider 로직 실행 후 정상인 경우만 pass
+                  var result = await context
+                      .read<FindUserProvider>()
+                      .findid_email(
+                          _nameController.text, _emailController.text);
+                  if (result == 'success') {
+                    transferProvider(context);
+                    Navigator.pushNamed(context, 'findidresult');
+                  } else {
+                    context
+                        .read<AlertDialogProvider>()
+                        .globalshowDialog(context, result);
+                  }
                 }
               } else if (_tabController.index == 1) {
-                _pformKey.currentState!.validate();
                 _pformKey.currentState!.save();
                 if (_nameController.text.isEmpty) {
                   _focusNodename.requestFocus();
@@ -170,15 +189,23 @@ class FindUserWidgetState extends State<FindUserWidget>
                 //phone이 비었을 경우
                 else if (_phoneController.text.isEmpty) {
                   _focusNodephone.requestFocus();
+                } else if (!_pformKey.currentState!.validate()) {
+                } else {
+                  // 유효성 검사 통과할 경우 provider 로직 실행 후 정상인 경우만 pass
+                  var result = await context
+                      .read<FindUserProvider>()
+                      .findid_phone(
+                          _nameController.text, _phoneController.text);
+                  if (result == 'success') {
+                    transferProvider(context);
+                    Navigator.pushNamed(context, 'findidresult');
+                  } else {
+                    context
+                        .read<AlertDialogProvider>()
+                        .globalshowDialog(context, result);
+                  }
                 }
               }
-              // 유효성 검사 통과할 경우 provider 로직 실행 후 정상인 경우만 pass
-              // if ( ){
-              // } else {
-              // }
-              // Navigator.pushNamed(context, 'findidresult');
-
-              //
             },
             style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -205,40 +232,10 @@ class FindUserWidgetState extends State<FindUserWidget>
             )));
   }
 
-  // 비밀번호 찾으러가는 버튼
-  Widget _findpassoword(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.only(left: 15, right: 15),
-        margin: EdgeInsets.only(top: 30),
-        width: double.infinity,
-        height: 60,
-        child: ElevatedButton(
-            // 블럭 효과보이는 버튼
-            onPressed: () {
-              Navigator.pushNamed(context, 'findpw');
-            },
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3))),
-              foregroundColor: MaterialStateProperty.all(
-                //모든 상태에따라 아래 색상표기
-                Colors.white, // 글자색
-              ),
-              backgroundColor: MaterialStateProperty.resolveWith(
-                // 버튼 상태에따라 색상 변경
-                (states) {
-                  if (states.contains(MaterialState.pressed)) {
-                    return Colors.grey;
-                  } else {
-                    return Colors.blue;
-                  }
-                },
-              ),
-            ),
-            child: const Text(
-              "비밀번호 찾기",
-              style: TextStyle(fontSize: 16),
-            )));
+  void transferProvider(BuildContext context) {
+    String? id = context.read<FindUserProvider>().id;
+    context
+        .read<UserInfoProvider>()
+        .setUserInfo(User(id: id, name: null, email: null, phone_num: null));
   }
 }

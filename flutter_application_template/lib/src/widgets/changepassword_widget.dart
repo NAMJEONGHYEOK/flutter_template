@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_template/src/providers/alertdialog_provider.dart';
+import 'package:flutter_application_template/src/providers/changepw_provider.dart';
+
+import 'package:flutter_application_template/src/providers/userinfo_provider.dart';
 import 'package:flutter_application_template/src/widgets/buttons_widget.dart';
 import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
 import 'package:flutter_application_template/src/widgets/textinform_widget.dart';
+import 'package:provider/provider.dart';
 
 class ChangePasswordWidget extends StatefulWidget {
   @override
@@ -50,6 +55,7 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                     "\u2022 같은 문자의 반복 또는 쉬운 비밀번호는 사용하지 마세요.\n",
                 textAlign: TextAlign.left), // title 글씨
             _inputform(context),
+            _changepwbutton(context),
             Okbutton('login'),
             CancleButton('login')
             // GoLoginButton()
@@ -58,16 +64,69 @@ class ChangePasswordWidgetState extends State<ChangePasswordWidget> {
   }
 
   Widget _inputform(BuildContext context) {
+    String? _id = context.read<UserInfoProvider>().userInfo!.id;
     // print(userid.toString());
     return Form(
         key: _aformKey,
-        autovalidateMode: AutovalidateMode.always,
+        autovalidateMode: AutovalidateMode.disabled,
         child: Column(
           children: [
-            Password(_passwordController, _focusNodepassword),
+            Password.withId(_passwordController, _focusNodepassword, _id),
             RePassword(_repasswordController, _focusNoderepassword,
                 _passwordController)
           ],
         ));
+  }
+
+  Widget _changepwbutton(BuildContext context) {
+    String? _id = context.read<UserInfoProvider>().userInfo!.id;
+    return ElevatedButton(
+      // 블럭 효과보이는 버튼
+      onPressed: () async {
+        _aformKey.currentState!.save();
+        if (_passwordController.text.isEmpty) {
+          _focusNodepassword.requestFocus();
+        } else if (_repasswordController.text.isEmpty) {
+          _focusNoderepassword.requestFocus();
+        } else if (!_aformKey.currentState!.validate()) {
+        } else {
+          var result = await context
+              .read<ChangePwProvider>()
+              .changepassword(_id!, _passwordController.text);
+          if (result == 'success') {
+            context
+                .read<AlertDialogProvider>()
+                .globalshowDialog(context, result);
+            Navigator.pushNamed(context, 'login');
+          } else {
+            context
+                .read<AlertDialogProvider>()
+                .globalshowDialog(context, result);
+          }
+        }
+      },
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(3))),
+        foregroundColor: MaterialStateProperty.all(
+          //모든 상태에따라 아래 색상표기
+          Colors.white, // 글자색
+        ),
+        backgroundColor: MaterialStateProperty.resolveWith(
+          // 버튼 상태에따라 색상 변경
+          (states) {
+            if (states.contains(MaterialState.pressed)) {
+              return Colors.grey;
+            } else {
+              return Colors.blue;
+            }
+          },
+        ),
+      ),
+      child: Text(
+        "비밀번호 변경",
+        style: TextStyle(fontSize: 16),
+      ),
+    );
   }
 }

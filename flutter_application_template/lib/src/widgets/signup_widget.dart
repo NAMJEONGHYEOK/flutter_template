@@ -1,7 +1,9 @@
 //StatefulWidget 으로 작성
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_template/src/models/userinfo.dart';
 import 'package:flutter_application_template/src/providers/signup_provider.dart';
+import 'package:flutter_application_template/src/providers/userinfo_provider.dart';
 import 'package:flutter_application_template/src/widgets/forminputfield_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +13,8 @@ class SignUpWidget extends StatefulWidget {
 }
 
 class SignUpWidgetState extends State<SignUpWidget> {
+  final signupType = 'email';
+
   final _formkey = GlobalKey<FormState>();
   final FocusNode _focusNodeid = FocusNode();
   final FocusNode _focusNodename = FocusNode();
@@ -74,7 +78,8 @@ class SignUpWidgetState extends State<SignUpWidget> {
             _inputtitletext("아이디"),
             Id(_idController, _focusNodeid),
             _inputtitletext("비밀번호"),
-            Password(_passwordController, _focusNodepassword),
+            Password.withId(
+                _passwordController, _focusNodepassword, _idController.text),
             _inputtitletext("비밀번호 확인"),
             RePassword(_repasswordController, _focusNoderepassword,
                 _passwordController),
@@ -190,9 +195,9 @@ class SignUpWidgetState extends State<SignUpWidget> {
       child: ElevatedButton(
         onPressed: !_isenabledbtn
             ? null
-            : () {
-                _formkey.currentState!.validate();
+            : () async {
                 _formkey.currentState!.save();
+
                 if (_idController.text.isEmpty) {
                   _focusNodeid.requestFocus();
                 } else if (_passwordController.text.isEmpty) {
@@ -205,16 +210,32 @@ class SignUpWidgetState extends State<SignUpWidget> {
                   _focusNodename.requestFocus();
                 } else if (_phoneController.text.isEmpty) {
                   _focusNodephone.requestFocus();
+                } else if (_idController.text == _passwordController.text) {
+                } else if (!_formkey.currentState!.validate()) {
                 } else {
                   // 전부 이상없는경우 진행
-                  signupProvider.signup(
+                  final result = await signupProvider.signup(
                       _idController.text,
                       _passwordController.text,
                       _nameController.text,
                       _emailController.text,
-                      _phoneController.text);
+                      _phoneController.text,
+                      signupType);
+
+                  print(result);
+                  print(result.toString());
+
+                  if (result == true) {
+                    context.read<UserInfoProvider>().setUserInfo(User(
+                        id: _idController.text,
+                        name: _nameController.text,
+                        email: _emailController.text,
+                        phone_num: _phoneController.text));
+                    Navigator.pushNamed(context, 'signupresult');
+                  } else {
+                    print(result);
+                  }
                   // print(signupProvider.userinfo.name);
-                  Navigator.pushNamed(context, 'signupresult');
                 }
               },
         child: Text('버튼'),

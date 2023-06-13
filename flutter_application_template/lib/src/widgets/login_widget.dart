@@ -138,7 +138,6 @@ class LoginWidgetState extends State<LoginWidget> {
         child: ElevatedButton(
             // 블럭 효과보이는 버튼
             onPressed: () async {
-              _formKey.currentState!.validate();
               _formKey.currentState!.save();
               //id가 비었을경우
               if (_idController.text.isEmpty) {
@@ -147,13 +146,8 @@ class LoginWidgetState extends State<LoginWidget> {
               //password가 비었을 경우
               else if (_passwordController.text.isEmpty) {
                 _focusNodepassword.requestFocus();
+              } else if (!_formKey.currentState!.validate()) {
               }
-              // else if (!_formKey.currentState!.validate()) {
-              //   // 유효성에서 걸릴경우 state변경 후 메세지 출력
-              //   setState(() {
-              //     _autovalidateMode = AutovalidateMode.always;
-              //   });
-              // }
               //입력칸이 전부 입려된 경우. 로그인 함수로 일치, 불일치 실행.
               else {
                 try {
